@@ -39,6 +39,7 @@
         <button id="toggle-isometric" type="button">Isometric: ON</button>
       </div>
       <div id="battlefield"></div>
+      <div id="party-cards"></div>
       <p id="status"></p>
       <div id="log"></div>
       <p>
@@ -669,6 +670,44 @@
           "'s Turn (Moves Left: " +
           battleEngine.movePoints +
           ")";
+        renderPartyCards();
+      }
+
+      function renderPartyCards() {
+        const cardsEl = document.getElementById("party-cards");
+        if (!cardsEl || !battleEngine || !party.length) return;
+
+        const activeIndex = battleEngine.currentUnit;
+        cardsEl.innerHTML = party
+          .map((hero, index) => {
+            const completeStats = getCompleteStats(hero);
+            const positiveStats = Object.entries(completeStats).filter(
+              ([, value]) => typeof value === "number" && value > 0
+            );
+            const statChips = positiveStats
+              .map(([stat, value]) => {
+                const label = stat.charAt(0).toUpperCase() + stat.slice(1);
+                return `<span class="stat-chip">${label}: ${value}</span>`;
+              })
+              .join("");
+            const isActive = index === activeIndex;
+            const isDefeated = hero.hp <= 0 || hero.persistentDeath;
+
+            return `<article class="party-card${isActive ? " active-turn" : ""}${
+              isDefeated ? " defeated" : ""
+            }">
+              <div class="party-card-header">
+                ${
+                  hero.sprite
+                    ? `<img class="party-sprite" src="${hero.sprite}" alt="${hero.name}">`
+                    : `<div class="party-symbol">${hero.symbol}</div>`
+                }
+                <h3>${hero.name}</h3>
+              </div>
+              <div class="party-card-stats">${statChips || '<span class="stat-chip">No active stats</span>'}</div>
+            </article>`;
+          })
+          .join("");
       }
 
       function updateIsometricToggleLabel() {
