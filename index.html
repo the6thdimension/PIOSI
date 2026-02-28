@@ -36,9 +36,17 @@
     <div id="game-container">
       <h1 id="level-title">Level Title</h1>
       <div id="battle-view-controls">
-        <button id="toggle-isometric" type="button">Isometric: ON</button>
+        <button id="toggle-options" type="button">Options</button>
+        <div id="options-panel" class="hidden">
+          <label><input id="opt-isometric" type="checkbox" checked /> Isometric View</label>
+          <label><input id="opt-timeline" type="checkbox" checked /> Turn Timeline</label>
+          <label><input id="opt-intent" type="checkbox" checked /> Enemy Intent Preview</label>
+          <label><input id="opt-readability" type="checkbox" checked /> Combat Readability Overlay</label>
+        </div>
       </div>
       <div id="battlefield"></div>
+      <div id="turn-timeline" class="battle-info-panel"></div>
+      <div id="enemy-intent" class="battle-info-panel"></div>
       <div id="party-cards"></div>
       <p id="status"></p>
       <div id="log"></div>
@@ -151,8 +159,14 @@
       let enemies = [];
       let battleEngine = null;
       let cheatActive = false; // Prevent waiting cheat activation
-      let isometricEnabled = true;
-      globalThis.PIOSI_ISOMETRIC = isometricEnabled;
+      const uiOptions = {
+        isometric: true,
+        showTimeline: true,
+        showIntent: true,
+        showReadability: true,
+      };
+      globalThis.PIOSI_ISOMETRIC = uiOptions.isometric;
+      globalThis.PIOSI_OPTIONS = uiOptions;
 
       // Cheat detection variables
       const cheatSequence = [
@@ -671,6 +685,8 @@
           battleEngine.movePoints +
           ")";
         renderPartyCards();
+        renderTurnTimeline();
+        renderEnemyIntent();
       }
 
       function renderPartyCards() {
@@ -710,10 +726,41 @@
           .join("");
       }
 
-      function updateIsometricToggleLabel() {
-        const btn = document.getElementById("toggle-isometric");
-        if (!btn) return;
-        btn.textContent = `Isometric: ${isometricEnabled ? "ON" : "OFF"}`;
+      function renderTurnTimeline() {
+        const el = document.getElementById("turn-timeline");
+        if (!el || !battleEngine) return;
+        if (!uiOptions.showTimeline) {
+          el.style.display = "none";
+          return;
+        }
+        el.style.display = "block";
+        const items = battleEngine.getTurnTimeline(10);
+        el.innerHTML = `<h3>Turn Timeline</h3><div class="timeline-list">${
+          items
+            .map((item) => `<div class="timeline-item${item.active ? " active" : ""}">${item.label}</div>`)
+            .join("")
+        }</div>`;
+      }
+
+      function renderEnemyIntent() {
+        const el = document.getElementById("enemy-intent");
+        if (!el || !battleEngine) return;
+        if (!uiOptions.showIntent) {
+          el.style.display = "none";
+          return;
+        }
+        el.style.display = "block";
+        const intents = battleEngine.getEnemyIntentPreview(8);
+        el.innerHTML = `<h3>Enemy Intent</h3><div class="intent-list">${
+          intents.length
+            ? intents
+                .map(
+                  (intent) =>
+                    `<div class="intent-item ${intent.threatClass}"><strong>${intent.enemy}</strong> -> ${intent.target} (${intent.note})</div>`
+                )
+                .join("")
+            : '<div class="intent-item">No immediate enemy intents.</div>'
+        }</div>`;
       }
 
       /**
@@ -721,7 +768,29 @@
        */
       function logMessage(message) {
         const logDiv = document.getElementById("log");
-        logDiv.innerHTML += `<p>${message}</p>`;
+        const line = document.createElement("p");
+        line.textContent = message;
+        const enemyNames = battleEngine ? battleEngine.enemies.map((enemy) => enemy.name) : [];
+        const isEnemyMessage =
+          message === "Enemy turn begins." ||
+          message === "Enemy turn completed." ||
+          enemyNames.some(
+            (name) =>
+              message.startsWith(`${name} `) ||
+              message.startsWith(`${name}'`) ||
+              message.startsWith(`${name}(`) ||
+              message.includes(`${name} attacks`) ||
+              message.includes(`${name} says:`) ||
+              message.includes(`${name} dodges`)
+          );
+        if (isEnemyMessage) {
+          line.className = "enemy-log-entry";
+        }
+        logDiv.appendChild(line);
+        const maxLines = 220;
+        while (logDiv.children.length > maxLines) {
+          logDiv.removeChild(logDiv.firstChild);
+        }
         logDiv.scrollTop = logDiv.scrollHeight;
       }
 
@@ -817,7 +886,13 @@
       function startSummitMode() {
         const logCallback = (message) => {
           const logDiv = document.getElementById("summit-log");
-          logDiv.innerHTML += `<p>${message}</p>`;
+          const line = document.createElement("p");
+          line.textContent = message;
+          logDiv.appendChild(line);
+          const maxLines = 160;
+          while (logDiv.children.length > maxLines) {
+            logDiv.removeChild(logDiv.firstChild);
+          }
           logDiv.scrollTop = logDiv.scrollHeight;
         };
         const onGameOver = () => {
@@ -1062,18 +1137,43 @@
         });
       }
 
-      const toggleIsometricButton = document.getElementById("toggle-isometric");
-      if (toggleIsometricButton) {
-        toggleIsometricButton.addEventListener("click", () => {
-          isometricEnabled = !isometricEnabled;
-          globalThis.PIOSI_ISOMETRIC = isometricEnabled;
-          updateIsometricToggleLabel();
-          if (battleEngine && currentScreen === "battle") {
-            renderBattlefield();
-          }
+      const optionsToggle = document.getElementById("toggle-options");
+      const optionsPanel = document.getElementById("options-panel");
+      const optIsometric = document.getElementById("opt-isometric");
+      const optTimeline = document.getElementById("opt-timeline");
+      const optIntent = document.getElementById("opt-intent");
+      const optReadability = document.getElementById("opt-readability");
+
+      if (optionsToggle && optionsPanel) {
+        optionsToggle.addEventListener("click", () => {
+          optionsPanel.classList.toggle("hidden");
         });
       }
-      updateIsometricToggleLabel();
+      if (optIsometric) {
+        optIsometric.addEventListener("change", () => {
+          uiOptions.isometric = optIsometric.checked;
+          globalThis.PIOSI_ISOMETRIC = uiOptions.isometric;
+          if (battleEngine && currentScreen === "battle") renderBattlefield();
+        });
+      }
+      if (optTimeline) {
+        optTimeline.addEventListener("change", () => {
+          uiOptions.showTimeline = optTimeline.checked;
+          if (battleEngine && currentScreen === "battle") renderTurnTimeline();
+        });
+      }
+      if (optIntent) {
+        optIntent.addEventListener("change", () => {
+          uiOptions.showIntent = optIntent.checked;
+          if (battleEngine && currentScreen === "battle") renderEnemyIntent();
+        });
+      }
+      if (optReadability) {
+        optReadability.addEventListener("change", () => {
+          uiOptions.showReadability = optReadability.checked;
+          if (battleEngine && currentScreen === "battle") renderBattlefield();
+        });
+      }
 
       // Initialize griot narrative and show title screen when ready.
       initializeGriot("fantasy_narrative.txt").then(() => {

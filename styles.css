@@ -117,7 +117,7 @@ body {
   top: 75px;
 }
 
-#toggle-isometric {
+#toggle-options {
   width: 150px;
   padding: 10px 12px;
   border: 1px solid #8bb7df;
@@ -130,8 +130,87 @@ body {
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
 }
 
-#toggle-isometric:hover {
+#toggle-options:hover {
   filter: brightness(1.08);
+}
+
+#options-panel {
+  margin-top: 8px;
+  width: 220px;
+  background: rgba(6, 14, 22, 0.96);
+  border: 1px solid #2f4d64;
+  border-radius: 8px;
+  padding: 10px;
+  text-align: left;
+}
+
+#options-panel.hidden {
+  display: none;
+}
+
+#options-panel label {
+  display: block;
+  font-size: 0.82rem;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+#options-panel input {
+  margin-right: 6px;
+}
+
+.battle-info-panel {
+  max-width: 1100px;
+  margin: 8px auto;
+  padding: 8px 10px;
+  border: 1px solid #345369;
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(10, 24, 35, 0.9), rgba(6, 16, 24, 0.9));
+  text-align: left;
+}
+
+.battle-info-panel h3 {
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+  color: #d8edff;
+}
+
+.timeline-list,
+.intent-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.timeline-item,
+.intent-item {
+  font-size: 0.76rem;
+  border: 1px solid #32556f;
+  background: #152633;
+  color: #d8ecff;
+  padding: 4px 7px;
+  border-radius: 999px;
+}
+
+.timeline-item.active {
+  border-color: #9ad4ff;
+  background: #1f425b;
+  box-shadow: 0 0 0 1px rgba(154, 212, 255, 0.25);
+}
+
+.intent-item.high {
+  border-color: #ff8f8f;
+  background: #532a2a;
+}
+
+.intent-item.med {
+  border-color: #ffd08a;
+  background: #4a3b22;
+}
+
+.intent-item.low {
+  border-color: #88c4ff;
+  background: #20384f;
 }
 
 #party-cards {
@@ -233,6 +312,14 @@ body {
   transition: all 0.2s ease-in-out; /* Smooth transition for state changes */
 }
 
+.cell.move-hint {
+  box-shadow: inset 0 0 0 2px rgba(113, 207, 255, 0.7);
+}
+
+.cell.attack-hint {
+  box-shadow: inset 0 0 0 2px rgba(255, 133, 133, 0.75);
+}
+
 /* Isometric battlefield */
 .iso-battlefield {
   position: relative;
@@ -330,6 +417,14 @@ body {
 .iso-cell.enemy-tile {
   background: linear-gradient(180deg, #ffab8c, #a24229);
   border-color: #ffd3c4;
+}
+
+.iso-cell.move-hint {
+  box-shadow: inset 0 0 0 2px rgba(113, 207, 255, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.12), inset 0 -2px 0 rgba(0, 0, 0, 0.28);
+}
+
+.iso-cell.attack-hint {
+  box-shadow: inset 0 0 0 2px rgba(255, 133, 133, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.12), inset 0 -2px 0 rgba(0, 0, 0, 0.28);
 }
 
 @media (max-width: 1100px) {
@@ -493,6 +588,10 @@ button {
 /* Margins for each paragraph inside the log area for spacing */
 #log p {
   margin: 0.5rem 0;
+}
+
+#log p.enemy-log-entry {
+  color: #ff6b6b;
 }
 
 /* Media Query for Smaller Screens */

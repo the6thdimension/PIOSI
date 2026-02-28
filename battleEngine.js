@@ -177,20 +177,47 @@ export class BattleEngine {
  
   drawBattlefield() {
     const useIsometric = globalThis.PIOSI_ISOMETRIC !== false;
+    const showReadability = !globalThis.PIOSI_OPTIONS || globalThis.PIOSI_OPTIONS.showReadability !== false;
     const activeHero =
       this.party[this.currentUnit] && !this.party[this.currentUnit].persistentDeath
         ? this.party[this.currentUnit]
         : null;
+    const enemyPositions = new Set(this.enemies.map(enemy => `${enemy.x},${enemy.y}`));
+    const heroPositions = new Set(
+      this.party
+        .filter(hero => !hero.persistentDeath && hero.hp > 0)
+        .map(hero => `${hero.x},${hero.y}`)
+    );
+    const moveHintPositions = new Set();
+    const attackHintPositions = new Set();
+
+    if (showReadability && activeHero) {
+      const maxDistance = this.awaitingAttackDirection ? activeHero.range : this.movePoints;
+      for (let y = 0; y < this.rows; y++) {
+        for (let x = 0; x < this.cols; x++) {
+          const distance = this.manhattanDistance(activeHero.x, activeHero.y, x, y);
+          if (distance <= 0 || distance > maxDistance) continue;
+          if (this.awaitingAttackDirection) {
+            attackHintPositions.add(`${x},${y}`);
+          } else if (this.isCellPassable(x, y)) {
+            moveHintPositions.add(`${x},${y}`);
+          }
+        }
+      }
+    }
 
     if (!useIsometric) {
       let html = "";
       for (let y = 0; y < this.rows; y++) {
         html += '<div class="row">';
         for (let x = 0; x < this.cols; x++) {
+          const key = `${x},${y}`;
           const cellContent = this.battlefield[y][x];
           let cellClass = "";
           if (cellContent !== "." && this.isCellPassable(x, y)) cellClass += " healing-item";
-          if (this.enemies.some(enemy => enemy.symbol === cellContent)) cellClass += " enemy";
+          if (enemyPositions.has(key)) cellClass += " enemy";
+          if (attackHintPositions.has(key)) cellClass += " attack-hint";
+          if (moveHintPositions.has(key)) cellClass += " move-hint";
           if (activeHero && activeHero.x === x && activeHero.y === y) {
             cellClass += this.awaitingAttackDirection ? " attack-mode" : " active";
           }
@@ -210,11 +237,12 @@ export class BattleEngine {
     let html = `<div class="iso-battlefield" style="width:${Math.round(gridWidth)}px;height:${Math.round(gridHeight)}px;">`;
     for (let y = 0; y < this.rows; y++) {
       for (let x = 0; x < this.cols; x++) {
+        const key = `${x},${y}`;
         const cellContent = this.battlefield[y][x];
         const isoX = (x - y) * (tileWidth / 2) + originX;
         const isoY = (x + y) * (tileHeight / 2);
-        const isEnemySymbol = this.enemies.some(enemy => enemy.symbol === cellContent);
-        const isHeroSymbol = this.party.some(hero => !hero.persistentDeath && hero.symbol === cellContent);
+        const isEnemySymbol = enemyPositions.has(key);
+        const isHeroSymbol = heroPositions.has(key);
         const isHealing = cellContent !== "." && this.isCellPassable(x, y);
         const isWall = !isHealing && !isEnemySymbol && !isHeroSymbol && cellContent !== ".";
         const isElevated = isEnemySymbol || isHeroSymbol;
@@ -225,6 +253,8 @@ export class BattleEngine {
         if (isEnemySymbol) cellClass += " enemy enemy-tile elevated";
         if (isHeroSymbol) cellClass += " hero-tile elevated";
         if (isWall) cellClass += " wall-tile wall-height";
+        if (attackHintPositions.has(key)) cellClass += " attack-hint";
+        if (moveHintPositions.has(key)) cellClass += " move-hint";
         if (activeHero && activeHero.x === x && activeHero.y === y) {
           cellClass += this.awaitingAttackDirection ? " attack-mode elevated" : " active elevated";
         }
@@ -234,6 +264,77 @@ export class BattleEngine {
     }
     html += "</div>";
     return html;
+  }
+
+  manhattanDistance(x1, y1, x2, y2) {
+    return Math.abs(x1 - x2) + Math.abs(y1 - y2);
+  }
+
+  isMoveHintCell(activeHero, x, y) {
+    if (!activeHero) return false;
+    const distance = this.manhattanDistance(activeHero.x, activeHero.y, x, y);
+    if (distance === 0 || distance > this.movePoints) return false;
+    return this.isCellPassable(x, y);
+  }
+
+  isAttackHintCell(activeHero, x, y) {
+    if (!activeHero) return false;
+    const distance = this.manhattanDistance(activeHero.x, activeHero.y, x, y);
+    return distance > 0 && distance <= activeHero.range;
+  }
+
+  getTurnTimeline(maxEntries = 10) {
+    const timeline = [];
+    for (let offset = 0; offset < this.party.length; offset++) {
+      const idx = (this.currentUnit + offset) % this.party.length;
+      const hero = this.party[idx];
+      if (!hero || hero.persistentDeath || hero.hp <= 0) continue;
+      timeline.push({ label: hero.name, active: idx === this.currentUnit });
+      if (timeline.length >= Math.max(1, maxEntries - 1)) break;
+    }
+    timeline.push({ label: `Enemy Wave (${this.enemies.length})`, active: false });
+    return timeline.slice(0, maxEntries);
+  }
+
+  getEnemyIntentPreview(maxEntries = 8) {
+    const liveHeroes = this.getLiveHeroes();
+    if (!liveHeroes.length || !this.enemies.length) return [];
+
+    const intents = this.enemies.slice(0, maxEntries).map(enemy => {
+      const target = this.findClosestHero(enemy);
+      if (!target) {
+        return {
+          enemy: enemy.name,
+          target: "No target",
+          note: "idle",
+          threatClass: "low"
+        };
+      }
+      const distance = this.manhattanDistance(enemy.x, enemy.y, target.x, target.y);
+      const canAttackNow = distance <= 1;
+      const canThreatenThisTurn = distance - enemy.agility <= 1;
+      let note = "repositioning";
+      let threatClass = "low";
+
+      if (canAttackNow) {
+        note = `attack now (~${enemy.attack} dmg)`;
+        threatClass = "high";
+      } else if (canThreatenThisTurn) {
+        note = "can engage this turn";
+        threatClass = "med";
+      }
+
+      return {
+        enemy: enemy.name,
+        target: target.name,
+        note,
+        threatClass
+      };
+    });
+
+    const threatRank = { high: 0, med: 1, low: 2 };
+    intents.sort((a, b) => threatRank[a.threatClass] - threatRank[b.threatClass]);
+    return intents;
   }
 
   isWithinBounds(x, y) {
