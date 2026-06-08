@@ -82,6 +82,13 @@ const keyActions = {
   },
   victory: { Space: () => restartGame() },
   'game-over': { Space: () => restartGame() },
+  dispatch: {
+    Space: () => { if (state._dispatchContinue) state._dispatchContinue(); },
+    ArrowUp: () => { if (state._dispatchContinue) state._dispatchContinue(); },
+    ArrowDown: () => { if (state._dispatchContinue) state._dispatchContinue(); },
+    ArrowLeft: () => { if (state._dispatchContinue) state._dispatchContinue(); },
+    ArrowRight: () => { if (state._dispatchContinue) state._dispatchContinue(); },
+  },
   modeUp: {
     ArrowLeft: () => {
       if (state.livingHeroes.length > 0) {
@@ -217,6 +224,14 @@ export function initInputHandler() {
   // Party select: start button
   const startBtn = document.getElementById('start-btn');
   if (startBtn) startBtn.addEventListener('click', () => startGame());
+
+  // Dispatch screen: click/tap anywhere to continue
+  const dispatchScreen = document.getElementById('dispatch-screen');
+  if (dispatchScreen) {
+    dispatchScreen.addEventListener('click', () => {
+      if (state._dispatchContinue) state._dispatchContinue();
+    });
+  }
 
   // Party select nav arrows
   const navPrev = document.getElementById('nav-prev');

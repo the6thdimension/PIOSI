@@ -162,9 +162,10 @@ export async function updateHeroDisplay() {
       </div>
       <div class="spotlight-info">
         <div class="spotlight-name-row">
-          <span class="spotlight-name">${hero.name}</span>
+          <span class="spotlight-name${hero.lore ? ' has-lore' : ''}" id="spotlight-name-btn">${hero.name}${hero.lore ? ' <span class="lore-glyph">📜</span>' : ''}</span>
           <span class="hero-archetype-tag archetype-${archetype.toLowerCase()}">${archetype}</span>
         </div>
+        ${hero.lore ? `<div class="hero-lore" id="hero-lore" style="display:none;">${hero.lore}</div>` : ''}
         ${flavor ? `<div class="hero-flavor">${flavor}</div>` : ''}
         <div class="hero-stat-chips">${chips}</div>
         <div class="hero-action-row">${actionLabel}</div>
@@ -173,6 +174,17 @@ export async function updateHeroDisplay() {
 
   // Crossfade back in
   displayEl.classList.remove('fading');
+
+  // Hero history (lore) — tap the name to reveal/hide
+  const nameBtn = document.getElementById('spotlight-name-btn');
+  const loreEl = document.getElementById('hero-lore');
+  if (nameBtn && loreEl) {
+    nameBtn.addEventListener('click', () => {
+      const open = loreEl.style.display !== 'none';
+      loreEl.style.display = open ? 'none' : 'block';
+      nameBtn.classList.toggle('lore-open', !open);
+    });
+  }
 
   // Update dependent panels
   renderPartySlots();

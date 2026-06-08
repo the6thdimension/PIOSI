@@ -9,6 +9,32 @@ import { BattleEngine } from './battleEngine.js';
 import { SummitMode } from './summitMode.js';
 import { getGriotReaction, commentOn } from './griot.js';
 
+/**
+ * Inter-level dispatch (enhancement): shows a short narrative fragment when
+ * entering a level, then runs `next()`. No-ops gracefully if no dispatch exists
+ * for the level (or it was already shown), preserving the flow either way.
+ */
+function showDispatchThen(level, next) {
+  const dispatch = (state.dispatches || []).find(d => d.enteringLevel === level);
+  if (!dispatch || state.dispatchesShown[level]) { next(); return; }
+  const textEl = document.getElementById('dispatch-text');
+  if (!textEl) { next(); return; }
+  state.dispatchesShown[level] = true;
+  textEl.textContent = dispatch.text;
+
+  let done = false;
+  const cont = () => {
+    if (done) return;
+    done = true;
+    if (state._dispatchTimer) { clearTimeout(state._dispatchTimer); state._dispatchTimer = null; }
+    state._dispatchContinue = null;
+    next();
+  };
+  state._dispatchContinue = cont;
+  state._dispatchTimer = setTimeout(cont, 7000); // auto-advance so it never blocks
+  showScreen('dispatch');
+}
+
 export function initializeBattle() {
   const settings = state.getLevel(state.level);
   if (!settings) {
@@ -109,9 +135,12 @@ export function applyCurrentModeUp() {
     if (win) win.classList.add('modeup-pulse');
     setTimeout(() => {
       if (win) win.classList.remove('modeup-pulse');
-      showScreen('battle');
       state.level++;
-      setTimeout(initializeBattle, 2000);
+      // Show the dispatch for the level we're entering, then start the battle.
+      showDispatchThen(state.level, () => {
+        showScreen('battle');
+        initializeBattle();
+      });
     }, 600);
   }
 }
@@ -125,8 +154,11 @@ export function startGame() {
   fadeOut(heroSelectMusic, () => backgroundMusic.play().catch(() => {}));
   state.party = state.selectedHeroes.map(i => Object.assign({}, state.allHeroes[i]));
   state.party.sort((a, b) => (b.agility || 0) - (a.agility || 0));
-  initializeBattle();
-  showScreen('battle');
+  // Show the opening dispatch for level 1, then begin the first battle.
+  showDispatchThen(state.level, () => {
+    initializeBattle();
+    showScreen('battle');
+  });
 }
 
 export function restartGame() {
@@ -136,6 +168,9 @@ export function restartGame() {
   state.heroIndex = 0;
   state.modeUpOptionIndex = 0;
   state.cheatActive = false;
+  state.dispatchesShown = {};
+  state._dispatchContinue = null;
+  if (state._dispatchTimer) { clearTimeout(state._dispatchTimer); state._dispatchTimer = null; }
   clearLog();
   document.getElementById('game-over').style.display = 'none';
   stopAudio(document.getElementById('background-music'));

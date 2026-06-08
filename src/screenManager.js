@@ -13,6 +13,8 @@ export function showScreen(screen) {
   document.getElementById('game-over').style.display = 'none';
   document.getElementById('summit-mode').style.display = 'none';
   document.getElementById('emanations-mode').style.display = 'none';
+  const dispatchScreen = document.getElementById('dispatch-screen');
+  if (dispatchScreen) dispatchScreen.style.display = 'none';
 
   if (screen === 'title') {
     document.getElementById('title-screen').style.display = 'flex';
@@ -27,6 +29,9 @@ export function showScreen(screen) {
     initWorldMap();
   } else if (screen === 'modeUp') {
     document.getElementById('mode-up-window').style.display = 'flex';
+  } else if (screen === 'dispatch') {
+    const ds = document.getElementById('dispatch-screen');
+    if (ds) ds.style.display = 'flex';
   } else if (screen === 'summitMode') {
     document.getElementById('summit-mode').style.display = 'flex';
   } else if (screen === 'emanationsMode') {

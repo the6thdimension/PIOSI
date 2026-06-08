@@ -78,6 +78,15 @@
       </div>
     </div>
 
+    <!-- Inter-level Dispatch Screen -->
+    <div id="dispatch-screen">
+      <div class="dispatch-frame">
+        <div class="dispatch-label">⟢ DISPATCH ⟣</div>
+        <p id="dispatch-text"></p>
+        <p class="dispatch-continue">PRESS SPACE TO CONTINUE</p>
+      </div>
+    </div>
+
     <!-- Victory Screen -->
     <div id="victory">
       <h1>Victory!</h1>
@@ -150,10 +159,11 @@
 
       Promise.all([
         initializeGriot('content/fantasy_narrative.txt'),
-        loadContent().then(({ manifest, heroes, getLevel }) => {
+        loadContent().then(({ manifest, heroes, getLevel, dispatches }) => {
           state.loadedManifest = manifest;
           state.allHeroes = heroes;
           state.getLevel = getLevel;
+          state.dispatches = dispatches || [];
         }).catch(() => {
           console.warn('Content loading failed; using static fallback data.');
         }),

@@ -9,7 +9,8 @@
       "range": 1,
       "agility": 4,
       "hp": 18,
-      "lastWords": "Hold the line. Someone must."
+      "lastWords": "Hold the line. Someone must.",
+      "lore": "He was raised where a wall once stood and was broken, and he learned the trade of standing where others fled. No banner claims him; the orders that knighted him are ash, their names gone with the companies that tried the crossings. He remembers only the holding — the cold press of stone at his back, the line that thinned and did not break while he breathed. He asks for no more than that."
     },
     {
       "id": "archer",
@@ -20,7 +21,8 @@
       "range": 5,
       "agility": 4,
       "hp": 12,
-      "lastWords": "Too close. I needed more distance."
+      "lastWords": "Too close. I needed more distance.",
+      "lore": "She came from the high places above the Pale Road, where one learned early that the brigands who reached you had already won. So she never let them reach her. They say she watched three companies enter the Throat and counted, from a distance, which would not come out. Closeness was the one country she would not enter. It found her anyway, and she had no answer for it."
     },
     {
       "id": "wizard",
@@ -32,7 +34,8 @@
       "agility": 2,
       "hp": 10,
       "chain": 5,
-      "lastWords": "The chain... should have gone further."
+      "lastWords": "The chain... should have gone further.",
+      "lore": "He was old when the sagas were still being sung, and older when they were forgotten. The arts he kept were not taught but inherited, link by link, from teachers who had each, in turn, reached too far. He spoke of the chain the way the drowning speak of the shore — always a little farther than the hand can stretch. He believed, to the end, that the reach was the only thing worth dying for."
     },
     {
       "id": "berserker",
@@ -44,7 +47,8 @@
       "agility": 3,
       "hp": 20,
       "rage": 1,
-      "lastWords": "Finally. A worthy enough ending."
+      "lastWords": "Finally. A worthy enough ending.",
+      "lore": "No road names him, no faction claims his blood; he arrived already at war with something none of the others could see. He did not speak of victory, which bored him, nor of the dead, whom he did not count. He came to the wall because the wall fought back, and the Coterians threw themselves at it in fours, and that was a thing to be answered fully. He wanted only an ending worthy of the wanting."
     },
     {
       "id": "rogue",
@@ -55,7 +59,8 @@
       "range": 2,
       "agility": 6,
       "hp": 12,
-      "lastWords": "I did not expect this particular shadow."
+      "lastWords": "I did not expect this particular shadow.",
+      "lore": "She learned her craft in the Flanking Rooms before the Vanguard held them, in the years when the single-file dead had not yet stopped coming. To move first, unseen, was not a skill to her but a way of breathing. She knew every shadow in the company and trusted the dark more than the strangers she walked beside. There was, it turned out, one shadow she had not learned. It moved before she did."
     },
     {
       "id": "cleric",
@@ -67,7 +72,8 @@
       "agility": 3,
       "hp": 12,
       "heal": 4,
-      "lastWords": "Keep each other alive. That is all I ask."
+      "lastWords": "Keep each other alive. That is all I ask.",
+      "lore": "Before the company, there was a house of the sick, and a vow taken over a basin of cold water. The Cleric outlived that house and everyone in it, walking out alone past the empty cots. Some say no patient was ever lost while those hands held watch; only the watcher remained, going from wall to wall, keeping strangers standing because there was no one left to keep at home."
     },
     {
       "id": "jester",
@@ -80,7 +86,8 @@
       "hp": 10,
       "joke": true,
       "trick": 1,
-      "lastWords": "Ha. I did not see that one coming either."
+      "lastWords": "Ha. I did not see that one coming either.",
+      "lore": "There was a court once, and a lord who laughed only at cruelty. The Jester laughed back, and in time the lord stopped. The court is ash now, the name unspoken, the cause unrecorded. Only the laughter walks the roads still, and those who hear it find the ground less certain beneath them, and do not yet know why. It was never the blade that the strong men feared."
     },
     {
       "id": "meatwalker",
@@ -94,7 +101,8 @@
       "heal": 1,
       "meat": true,
       "bulk": 1,
-      "lastWords": "I have eaten worse than this moment."
+      "lastWords": "I have eaten worse than this moment.",
+      "lore": "He came from somewhere the others do not name, and the wounds upon him are older than the walls he breaks. Famine, fire, the long crossings where companies starved to bone — he has passed through all of them and closed over the marks like water over a thrown stone. There is nothing left that can be done to him that has not been done. He has simply chosen, at last, to walk forward."
     },
     {
       "id": "soothscribe",
@@ -107,7 +115,8 @@
       "hp": 11,
       "tarot": true,
       "fate": 1,
-      "lastWords": "The cards showed this. I chose not to look."
+      "lastWords": "The cards showed this. I chose not to look.",
+      "lore": "In a tower above a drowned town, the Soothscribe laid the cards for kings and beggars alike, and named the thing each had come hoping not to hear. The town went under all the same; the cards had said as much, and said it to no one who would listen. Now they lay them by the breaking walls, and read aloud what the company carries and will not say."
     },
     {
       "id": "nonsequiteur",
@@ -120,7 +129,8 @@
       "hp": 10,
       "nonseq": true,
       "caprice": 1,
-      "lastWords": "Actually, this makes a strange kind of sense."
+      "lastWords": "Actually, this makes a strange kind of sense.",
+      "lore": "No saga claims this one, and the few that try contradict each other. The Nonsequiteur arrived in the company as a stranger arrives in a dream — without door, without reason, already belonging. Where others learned that order keeps men alive, this one learned the opposite at some cost no one witnessed. To be foreseen is to be undone. So nothing about them follows from anything, and that is precisely how they have endured."
     },
     {
       "id": "griot",
@@ -132,7 +142,8 @@
       "agility": 1,
       "hp": 10,
       "reactsToHistory": true,
-      "lastWords": "Tell the story. Tell it true."
+      "lastWords": "Tell the story. Tell it true.",
+      "lore": "Before the saga had a name, there was the one who kept it. The Griot came from no company and every company, the last to leave each ruined wall and the first to speak its dead aloud. Frail of arm, vast of memory, the Griot carried the Throat and the Arena and the Breach as other men carry water. The crowd forgot. The fighters forgot. The Griot did not."
     },
     {
       "id": "torcher",
@@ -145,7 +156,8 @@
       "hp": 14,
       "torcher": true,
       "burn": 1,
-      "lastWords": "The fire was mine. For a while."
+      "lastWords": "The fire was mine. For a while.",
+      "lore": "They say the Torcher learned patience tending the lamps of a town that no longer stands, watching slow flame eat the rafters above sleeping kin. Whether the fire was prayer or vengeance, none agree. Only that the Torcher walked from the embers untouched and never again warmed both hands at once. Everything burns, given time. The Torcher simply stopped waiting for permission to give it."
     },
     {
       "id": "slujier",
@@ -157,7 +169,8 @@
       "agility": 4,
       "hp": 16,
       "sluj": 1,
-      "lastWords": "The slüj remains. That is enough."
+      "lastWords": "The slüj remains. That is enough.",
+      "lore": "The Slüjier was a maker of marks long before the wars, scoring boundaries no plow would cross and no claim could wash clean. What the hands touched soured slow and stayed soured. Cast out for it, the Slüjier found the roads full of the Hungry and the walls full of the Relentless, and learned that a wound that lingers is worth more than a blow that ends. The mark outlasts the marked."
     },
     {
       "id": "shrink",
@@ -170,7 +183,8 @@
       "hp": 12,
       "shrink": true,
       "psych": 1,
-      "lastWords": "We should talk about what just happened."
+      "lastWords": "We should talk about what just happened.",
+      "lore": "The Shrink came late to the company and earlier to the fight than any blade. Once a listener in a house of the unwell, where the worst sieges happened behind the eyes, the Shrink learned that every soldier breaks twice — once in the body, once before it. The Hollow-Helm of the Rooms feared no edge but flinched at being understood. The mind is the first wall, and the Shrink knew where it was thinnest."
     },
     {
       "id": "sycophant",
@@ -181,7 +195,8 @@
       "range": 0,
       "agility": 2,
       "hp": 15,
-      "lastWords": "I was becoming so good at this."
+      "lastWords": "I was becoming so good at this.",
+      "lore": "No one recalls the Sycophant arriving, because the Sycophant arrived as no one — a face that borrowed faces, a voice agreeing with whichever voice last spoke. Some say a servant of a lord long unseated, who survived by becoming the shape each new master wanted. By the time the company noticed, the Sycophant was already among them, already useful, already whatever the moment had asked. Becoming was the only self left."
     },
     {
       "id": "yeetrian",
@@ -193,7 +208,8 @@
       "agility": 4,
       "hp": 14,
       "yeet": 1,
-      "lastWords": "Closer than I like. Much, much closer."
+      "lastWords": "Closer than I like. Much, much closer.",
+      "lore": "Before the saga he was a quarryman of the Pale Road, the one they sent to clear what others could not lift. Men, stone, the dead left unburied — all the same weight to his hands. He learned early that distance is mercy: a thing flung far cannot reach you. The Brigands knew his name and kept to the far side of any gap. He counted safety in spans, and was never satisfied. Something always came too near."
     },
     {
       "id": "mellitron",
@@ -205,7 +221,8 @@
       "agility": 5,
       "hp": 18,
       "swarm": 2,
-      "lastWords": "The swarm will find another host."
+      "lastWords": "The swarm will find another host.",
+      "lore": "She was found in a hollowed hive-tower past the Reinforced Barricade, speaking for those who do not speak. No one recalls her coming alone; the swarm was always with her, a second body she wore like breath. Three companies had heard the droning before they saw the wall give way. She asked the swarm for nothing and it gave her everything, and she understood she was only the place it chose to gather. Hosts pass. The gathering does not."
     },
     {
       "id": "gastronomer",
@@ -218,7 +235,8 @@
       "hp": 15,
       "spicy": 1,
       "recipe": true,
-      "lastWords": "I should have eaten before the battle."
+      "lastWords": "I should have eaten before the battle.",
+      "lore": "In the long sieges he kept the fires that kept the living living. While captains spoke of glory he weighed bread and counted nights, knowing a company starves before it falls. He had fed the defeated of three crossings and learned their last requests were always for a meal. To him hunger was the first enemy and the last, older than any wall. He fed everyone but himself, and meant to mend that — later, always later."
     },
     {
       "id": "palisade",
@@ -230,7 +248,8 @@
       "agility": 2,
       "hp": 20,
       "armor": 5,
-      "lastWords": "I held. Longer than most would."
+      "lastWords": "I held. Longer than most would.",
+      "lore": "They built barricades to stop the Coterians, and when the barricades broke, they sent Palisade. Where she stood, the line held; the Hollow-Helm vanguard wore themselves to nothing against a thing that would not give ground. She did not remember choosing stillness. It was simply what remained when everything else had fled or fallen. Companies sheltered behind her and never learned her face, only her back, and the certainty that it would not move."
     },
     {
       "id": "mycelian",
@@ -242,7 +261,8 @@
       "agility": 3,
       "hp": 15,
       "spore": 1,
-      "lastWords": "The spores are already gone. The work continues."
+      "lastWords": "The spores are already gone. The work continues.",
+      "lore": "He came up through the wet dark beneath the Breach, where the dead lie thickest and the stone forgets to be stone. The Wardens found pale threads in their walls and could not name the rot. He did not hurry; he did not need to. What he set in motion would finish without him, in seasons no living watcher would count. He spoke of the work as a thing already done, and treated his own ending as the smallest part of it."
     },
     {
       "id": "paeg",
@@ -263,7 +283,8 @@
       "armor": 1,
       "spore": 1,
       "chain": 1,
-      "lastWords": "Each small thing. It all mattered."
+      "lastWords": "Each small thing. It all mattered.",
+      "lore": "No saga names where Pæg was born, and none agree on what trade kept those small hands busy before the wall. A mender, some say — of nets, of fences, of things that fail at a single thread. He counted what others discarded: a nail, a coin, a name. The company carried him without knowing why, the way a wall is only the sum of its stones."
     },
     {
       "id": "kemetic",
@@ -275,7 +296,8 @@
       "agility": 5,
       "hp": 25,
       "ankh": 5,
-      "lastWords": "My death is not an ending. Look at the others."
+      "lastWords": "My death is not an ending. Look at the others.",
+      "lore": "Kemetic came from the places where the dead are kept, not buried — laid in order, named, attended. A keeper of thresholds, schooled in the long arithmetic by which one ending pays for another's beginning. The company found this one already in mourning clothes, untroubled by the wall ahead, counting the living and the not-yet-living with the same patient hand, as if both were already accounted for."
     },
     {
       "id": "greenjay",
@@ -287,7 +309,8 @@
       "agility": 4,
       "hp": 30,
       "rise": 5,
-      "lastWords": "This time — this time it is final."
+      "lastWords": "This time — this time it is final.",
+      "lore": "Greenjay had crossed the threshold before and come back wearing the same face, a thing the roads spoke of in low voices. Three companies remembered a green figure rising from where it had fallen; none remembered the same wound twice. It walked into the saga without fear, for fear belongs to those who believe in the first death — and Greenjay had spent that coin long ago, and the next, and the next."
     },
     {
       "id": "sysiphuge",
@@ -299,7 +322,8 @@
       "agility": 4,
       "hp": 16,
       "dodge": 4,
-      "lastWords": "I ran out of angles."
+      "lastWords": "I ran out of angles.",
+      "lore": "Sysiphuge was never where the blow landed. In the Throat they swore a shape passed them that no spear found; in the Flanking Rooms, built to trap the single file, this one alone walked out untrapped. It kept no camp, slept in no circle, owed no rest to the body that carried it. The company learned not to reach for Sysiphuge — the hand closes on the angle it left behind."
     },
     {
       "id": "bombador",
@@ -311,7 +335,8 @@
       "agility": 6,
       "hp": 20,
       "bomba": 5,
-      "lastWords": "Too far. I needed to be just a little closer."
+      "lastWords": "Too far. I needed to be just a little closer.",
+      "lore": "Bombador came up close, always — too close for comfort, near enough that the breath of strangers mattered. The roads remember a figure that embraced what others struck from a distance, that measured worth in the span of an arm. No long reach, no patient siege; only the step nearer, and nearer, until the gap that kept men safe was gone. The company gave this one the front, where closeness is the whole of the weapon."
     }
   ]
 }

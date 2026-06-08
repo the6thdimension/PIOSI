@@ -1364,3 +1364,103 @@ button:active {
   opacity: 0.85;
   margin: 1px 0;
 }
+
+/* ── Inter-level dispatch screen ─────────────────────────── */
+
+#dispatch-screen {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: radial-gradient(ellipse at center, #0a0a12 0%, #050507 100%);
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  animation: dispatch-fade-in 0.8s ease;
+}
+
+@keyframes dispatch-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.dispatch-frame {
+  max-width: 620px;
+  width: 86%;
+  padding: 40px 36px;
+  text-align: center;
+  border-top: 1px solid #3a3a55;
+  border-bottom: 1px solid #3a3a55;
+  background: rgba(20, 18, 30, 0.4);
+}
+
+.dispatch-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.4em;
+  color: #c8a84a;
+  margin-bottom: 22px;
+  opacity: 0.8;
+}
+
+#dispatch-text {
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: #d8d0e0;
+  font-style: italic;
+  letter-spacing: 0.02em;
+  margin: 0 0 28px;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.6);
+  animation: dispatch-text-rise 1.2s ease 0.3s both;
+}
+
+@keyframes dispatch-text-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.dispatch-continue {
+  font-size: 0.68rem;
+  letter-spacing: 0.28em;
+  color: #5a5a72;
+  margin: 0;
+  animation: dispatch-blink 2s ease-in-out infinite;
+}
+
+@keyframes dispatch-blink {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 1; }
+}
+
+/* ── Hero history (lore) panel in party select ───────────── */
+
+.spotlight-name.has-lore {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.spotlight-name.has-lore:hover,
+.spotlight-name.lore-open {
+  color: #c8a84a;
+}
+
+.lore-glyph {
+  font-size: 0.7em;
+  opacity: 0.55;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+.hero-lore {
+  font-style: italic;
+  font-size: 0.84rem;
+  line-height: 1.6;
+  color: #b8b0c8;
+  background: rgba(0,0,0,0.3);
+  border-left: 2px solid #c8a84a;
+  padding: 10px 14px;
+  margin: 6px 0 10px;
+  text-align: left;
+  max-height: 200px;
+  overflow-y: auto;
+  animation: dispatch-text-rise 0.4s ease both;
+}
