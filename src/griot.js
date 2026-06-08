@@ -164,6 +164,49 @@ export async function fetchRandomRecipe() {
   }
 }
 
+// ── Narrator commentary — synchronous, local templates, no API ───────────────
+
+const NARRATOR_TEMPLATES = {
+  kill: [
+    'The saga turns on this moment.',
+    'Another falls to the company.',
+    'The field grows quiet.',
+    'A name struck from the count.',
+    'The work continues.',
+    'Swift and without ceremony.',
+    'The company does not look back.',
+  ],
+  heroDeath: [
+    'A light goes out.',
+    'The company shrinks, but the will does not.',
+    'Remember the fallen.',
+    'The saga carries their name forward.',
+    'One fewer voice in the dark.',
+    'The cost of the saga.',
+    'They knew what they chose.',
+  ],
+  nearDeath: [
+    'The thread grows thin.',
+    'One more blow and the saga changes.',
+    'Breath by breath, they hold.',
+    'The edge of things.',
+    'Danger presses close.',
+    'Not yet. Not quite yet.',
+    'The company holds its breath.',
+  ],
+};
+
+/**
+ * Returns a short narrator line for a battle event. Synchronous — no API call.
+ * @param {{ type: 'kill'|'heroDeath'|'nearDeath', hero?, enemy? }} event
+ * @returns {string}
+ */
+export function commentOn(event) {
+  const pool = NARRATOR_TEMPLATES[event.type];
+  if (!pool || !pool.length) return '';
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
 // Generates narrative text for the Griot, biased by recent interaction context.
 export async function getGriotReaction() {
   const recent = INTERACTION_TYPES.slice(-5);

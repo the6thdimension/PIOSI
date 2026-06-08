@@ -22,7 +22,7 @@ export class PersistentDeath {
 }
 
 export class BattleEngine {
-  constructor(party, enemies, fieldRows, fieldCols, wallHP, logCallback, onLevelComplete, onGameOver, levelLayout = null) {
+  constructor(party, enemies, fieldRows, fieldCols, wallHP, logCallback, onLevelComplete, onGameOver, levelLayout = null, narratorCallback = null) {
     // Keep all heroes in the party array.
     // NOTE: Heroes with persistent death will no longer be referenced in the battlefield.
     this.party = party;
@@ -34,6 +34,9 @@ export class BattleEngine {
     this.onLevelComplete = onLevelComplete;
     this.onGameOver = onGameOver;
     this.levelLayout = levelLayout;
+    // Optional narrator callback for dramatic battle moments (kill, heroDeath, nearDeath).
+    // Called synchronously with a structured event; must not block.
+    this.narratorCallback = typeof narratorCallback === 'function' ? narratorCallback : null;
 
     // Advance past any heroes that are already persistently dead at battle start.
     this.currentUnit = 0;
@@ -60,6 +63,9 @@ export class BattleEngine {
       if (typeof hero.rise !== 'number') hero.rise = 0;
       // Initialize dodge stat if not set.
       if (typeof hero.dodge !== 'number') hero.dodge = 0;
+      // Store baseline HP for wound threshold calculation (enhancement #4).
+      // Only set on first construction — preserves value across level-ups.
+      if (typeof hero._maxHp !== 'number') hero._maxHp = hero.hp;
     });
     this.enemies.forEach(enemy => {
       enemy.statusEffects = {};
@@ -378,8 +384,20 @@ export class BattleEngine {
           return; // Skip the rest of the attack logic
         }
         // DODGE CHECK END
-        enemy.hp -= unit.attack;
-        this.logCallback(`${unit.name} attacks ${enemy.name} for ${unit.attack} damage! (HP left: ${enemy.hp})`);
+
+        // WOUND THRESHOLD (enhancement #4): ≤33% HP → +2 attack, desperate blow
+        const isWounded = unit._maxHp && unit.hp / unit._maxHp <= 0.33;
+        const effectiveAttack = isWounded ? unit.attack + 2 : unit.attack;
+
+        // FLANKING BONUS (enhancement #3): hero + ally on opposite sides → +25% damage
+        const flankBonus = this._isFlankingAttack(unit, enemy)
+          ? Math.ceil(effectiveAttack * 0.25) : 0;
+        if (flankBonus > 0)
+          this.logCallback(`[⚡ INTERACTION] Flanking blow! +${flankBonus} bonus damage on ${enemy.name}!`);
+
+        const totalDamage = effectiveAttack + flankBonus;
+        enemy.hp -= totalDamage;
+        this.logCallback(`${unit.name} attacks ${enemy.name} for ${totalDamage} damage! (HP left: ${enemy.hp})`);
         if (unit.trick > 0) {
           const debuffableStats = ["attack", "range", "agility", "hp"];
           const availableStats = debuffableStats.filter(stat => typeof enemy[stat] === "number");
@@ -431,6 +449,7 @@ export class BattleEngine {
           this.logCallback(`${enemy.name} is defeated!`);
           this.battlefield[enemy.y][enemy.x] = '.';
           this.enemies = this.enemies.filter(e => e !== enemy);
+          if (this.narratorCallback) this.narratorCallback({ type: 'kill', hero: unit, enemy });
         }
         this.awaitingAttackDirection = false;
         await this.shortPause();
@@ -551,6 +570,22 @@ export class BattleEngine {
   canMove(x, y) {
     return this.isWithinBounds(x, y) && this.isCellPassable(x, y);
   }
+
+  /**
+   * FLANKING BONUS (enhancement #3)
+   * Returns true if at least one other live hero occupies a cell directly
+   * opposite the attacker relative to the target on either the X or Y axis.
+   */
+  _isFlankingAttack(attacker, target) {
+    const liveAllies = this.getLiveHeroes().filter(h => h !== attacker);
+    for (const ally of liveAllies) {
+      // Opposite on X axis (same row as target)
+      if (ally.y === target.y && ally.x === target.x + (target.x - attacker.x)) return true;
+      // Opposite on Y axis (same col as target)
+      if (ally.x === target.x && ally.y === target.y + (target.y - attacker.y)) return true;
+    }
+    return false;
+  }
   
   enemyAttackAdjacent(enemy) {
     const directions = [[0, -1], [0, 1], [-1, 0], [1, 0]];
@@ -575,10 +610,21 @@ export class BattleEngine {
           this.logCallback(`${enemy.name} attacks ${targetHero.name} for ${enemy.attack} damage! (HP left: ${targetHero.hp})`);
         }
         if (targetHero.hp <= 0) {
+          // ENEMY EPITHET (enhancement #9): named enemies get credit for the kill
+          const epithet = enemy.epithet ? `, ${enemy.epithet}` : '';
+          this.logCallback(`${targetHero.name} fell to ${enemy.name}${epithet}.`);
           this.handleHeroDeath(targetHero);
+          if (this.narratorCallback) this.narratorCallback({ type: 'heroDeath', hero: targetHero, killedBy: enemy });
           if (this.currentUnit >= this.party.length)
             this.currentUnit = 0;
-        } else if (targetHero.rage && targetHero.rage > 0) {
+        } else {
+          // NEAR-DEATH NARRATOR (enhancement #10): call when hero drops to ≤25% max HP
+          const nearDeathThreshold = Math.ceil((targetHero._maxHp || targetHero.hp) * 0.25);
+          if (targetHero.hp <= nearDeathThreshold && this.narratorCallback) {
+            this.narratorCallback({ type: 'nearDeath', hero: targetHero });
+          }
+        }
+        if (targetHero.hp > 0 && targetHero.rage && targetHero.rage > 0) {
           const stats = ['attack', 'range', 'agility', 'hp'];
           const randomStat = stats[Math.floor(Math.random() * stats.length)];
           if (targetHero.hasOwnProperty(randomStat)) {
@@ -615,8 +661,16 @@ export class BattleEngine {
         }
       }
     } while(this.party[this.currentUnit].persistentDeath);
-    this.movePoints = this.party[this.currentUnit].agility;
-    this.logCallback(`Now it's ${this.party[this.currentUnit].name}'s turn.`);
+    const nextHero = this.party[this.currentUnit];
+    // WOUND THRESHOLD (enhancement #4): ≤33% max HP → agility halved, attack gains +2 on attack
+    const isWounded = nextHero._maxHp && nextHero.hp / nextHero._maxHp <= 0.33;
+    if (isWounded) {
+      this.movePoints = Math.max(1, Math.ceil(nextHero.agility / 2));
+      this.logCallback(`${nextHero.name} is wounded — moving carefully (${this.movePoints} steps).`);
+    } else {
+      this.movePoints = nextHero.agility;
+    }
+    this.logCallback(`Now it's ${nextHero.name}'s turn.`);
   }
 
   applyStatusEffects() {
@@ -682,12 +736,14 @@ export class BattleEngine {
     }
     if (hero.persistentDeath) return;
     this.logCallback(`Hero ${hero.name} has fallen permanently. Applying persistent death and ankh effects...`);
+    // LAST WORDS (enhancement #6): emit hero's final line if defined in JSON
+    if (hero.lastWords) {
+      this.logCallback(`[LAST WORDS] "${hero.lastWords}"`);
+    }
     hero.statusEffects.death = true;
     hero.persistentDeath = new PersistentDeath();
     // Clear the cell so the dead hero is no longer represented on the battlefield.
     this.battlefield[hero.y][hero.x] = '.';
-    // Optionally, remove the hero from future selections.
-    // this.party = this.party.filter(h => h !== hero);
     this.applyAnkhBoost();
   }
 

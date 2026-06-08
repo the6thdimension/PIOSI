@@ -8,7 +8,8 @@
       "attack": 4,
       "range": 1,
       "agility": 4,
-      "hp": 18
+      "hp": 18,
+      "lastWords": "Hold the line. Someone must."
     },
     {
       "id": "archer",
@@ -18,7 +19,8 @@
       "attack": 3,
       "range": 5,
       "agility": 4,
-      "hp": 12
+      "hp": 12,
+      "lastWords": "Too close. I needed more distance."
     },
     {
       "id": "wizard",
@@ -29,7 +31,8 @@
       "range": 7,
       "agility": 2,
       "hp": 10,
-      "chain": 5
+      "chain": 5,
+      "lastWords": "The chain... should have gone further."
     },
     {
       "id": "berserker",
@@ -40,7 +43,8 @@
       "range": 1,
       "agility": 3,
       "hp": 20,
-      "rage": 1
+      "rage": 1,
+      "lastWords": "Finally. A worthy enough ending."
     },
     {
       "id": "rogue",
@@ -50,7 +54,8 @@
       "attack": 4,
       "range": 2,
       "agility": 6,
-      "hp": 12
+      "hp": 12,
+      "lastWords": "I did not expect this particular shadow."
     },
     {
       "id": "cleric",
@@ -61,7 +66,8 @@
       "range": 1,
       "agility": 3,
       "hp": 12,
-      "heal": 4
+      "heal": 4,
+      "lastWords": "Keep each other alive. That is all I ask."
     },
     {
       "id": "jester",
@@ -73,7 +79,8 @@
       "agility": 5,
       "hp": 10,
       "joke": true,
-      "trick": 1
+      "trick": 1,
+      "lastWords": "Ha. I did not see that one coming either."
     },
     {
       "id": "meatwalker",
@@ -86,7 +93,8 @@
       "hp": 22,
       "heal": 1,
       "meat": true,
-      "bulk": 1
+      "bulk": 1,
+      "lastWords": "I have eaten worse than this moment."
     },
     {
       "id": "soothscribe",
@@ -98,7 +106,8 @@
       "agility": 3,
       "hp": 11,
       "tarot": true,
-      "fate": 1
+      "fate": 1,
+      "lastWords": "The cards showed this. I chose not to look."
     },
     {
       "id": "nonsequiteur",
@@ -110,7 +119,8 @@
       "agility": 3,
       "hp": 10,
       "nonseq": true,
-      "caprice": 1
+      "caprice": 1,
+      "lastWords": "Actually, this makes a strange kind of sense."
     },
     {
       "id": "griot",
@@ -121,7 +131,8 @@
       "range": 1,
       "agility": 1,
       "hp": 10,
-      "reactsToHistory": true
+      "reactsToHistory": true,
+      "lastWords": "Tell the story. Tell it true."
     },
     {
       "id": "torcher",
@@ -133,7 +144,8 @@
       "agility": 3,
       "hp": 14,
       "torcher": true,
-      "burn": 1
+      "burn": 1,
+      "lastWords": "The fire was mine. For a while."
     },
     {
       "id": "slujier",
@@ -144,7 +156,8 @@
       "range": 1,
       "agility": 4,
       "hp": 16,
-      "sluj": 1
+      "sluj": 1,
+      "lastWords": "The slüj remains. That is enough."
     },
     {
       "id": "shrink",
@@ -156,7 +169,8 @@
       "agility": 3,
       "hp": 12,
       "shrink": true,
-      "psych": 1
+      "psych": 1,
+      "lastWords": "We should talk about what just happened."
     },
     {
       "id": "sycophant",
@@ -166,7 +180,8 @@
       "attack": 0,
       "range": 0,
       "agility": 2,
-      "hp": 15
+      "hp": 15,
+      "lastWords": "I was becoming so good at this."
     },
     {
       "id": "yeetrian",
@@ -177,7 +192,8 @@
       "range": 2,
       "agility": 4,
       "hp": 14,
-      "yeet": 1
+      "yeet": 1,
+      "lastWords": "Closer than I like. Much, much closer."
     },
     {
       "id": "mellitron",
@@ -188,7 +204,8 @@
       "range": 3,
       "agility": 5,
       "hp": 18,
-      "swarm": 2
+      "swarm": 2,
+      "lastWords": "The swarm will find another host."
     },
     {
       "id": "gastronomer",
@@ -200,7 +217,8 @@
       "agility": 3,
       "hp": 15,
       "spicy": 1,
-      "recipe": true
+      "recipe": true,
+      "lastWords": "I should have eaten before the battle."
     },
     {
       "id": "palisade",
@@ -211,7 +229,8 @@
       "range": 1,
       "agility": 2,
       "hp": 20,
-      "armor": 5
+      "armor": 5,
+      "lastWords": "I held. Longer than most would."
     },
     {
       "id": "mycelian",
@@ -222,7 +241,8 @@
       "range": 1,
       "agility": 3,
       "hp": 15,
-      "spore": 1
+      "spore": 1,
+      "lastWords": "The spores are already gone. The work continues."
     },
     {
       "id": "paeg",
@@ -242,7 +262,8 @@
       "spicy": 1,
       "armor": 1,
       "spore": 1,
-      "chain": 1
+      "chain": 1,
+      "lastWords": "Each small thing. It all mattered."
     },
     {
       "id": "kemetic",
@@ -253,7 +274,8 @@
       "range": 5,
       "agility": 5,
       "hp": 25,
-      "ankh": 5
+      "ankh": 5,
+      "lastWords": "My death is not an ending. Look at the others."
     },
     {
       "id": "greenjay",
@@ -264,7 +286,8 @@
       "range": 2,
       "agility": 4,
       "hp": 30,
-      "rise": 5
+      "rise": 5,
+      "lastWords": "This time — this time it is final."
     },
     {
       "id": "sysiphuge",
@@ -275,7 +298,8 @@
       "range": 1,
       "agility": 4,
       "hp": 16,
-      "dodge": 4
+      "dodge": 4,
+      "lastWords": "I ran out of angles."
     },
     {
       "id": "bombador",
@@ -286,7 +310,8 @@
       "range": 1,
       "agility": 6,
       "hp": 20,
-      "bomba": 5
+      "bomba": 5,
+      "lastWords": "Too far. I needed to be just a little closer."
     }
   ]
 }

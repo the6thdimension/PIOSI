@@ -161,6 +161,45 @@ export function getModeUpBuff(chosenHero, level) {
 }
 
 /**
+ * Returns the Mode Up monologue for a hero — the line they speak when levelling up.
+ * One sentence, first-person, in character. Used as a pull-quote in the Mode Up UI.
+ *
+ * @param {Object} hero
+ * @returns {string}
+ */
+export function getModeUpLine(hero) {
+  const heroKey = hero.id ?? hero.name;
+  switch (heroKey) {
+    case 'knight':    case 'Knight':      return 'I am the wall. And the wall holds.';
+    case 'archer':    case 'Archer':      return 'The distance between us is my advantage.';
+    case 'berserker': case 'Berserker':   return 'I do not fight to win. I fight until it stops.';
+    case 'rogue':     case 'Rogue':       return 'The shadow that moves first is never seen.';
+    case 'torcher':   case 'Torcher':     return 'Everything burns if you are patient enough.';
+    case 'slujier':   case 'Slüjier':    return 'I leave a mark that lasts longer than the blow.';
+    case 'cleric':    case 'Cleric':      return 'Let them stand. I will make sure of it.';
+    case 'jester':    case 'Jester':      return 'The one who laughs last controls the field.';
+    case 'sycophant': case 'Sycophant':   return 'I become whatever the moment requires.';
+    case 'yeetrian':  case 'Yeetrian':    return 'Space is just a problem I solve with force.';
+    case 'mellitron': case 'Mellitron':   return 'The swarm does not ask. It simply arrives.';
+    case 'gastronomer': case 'Gastronomer': return 'Sustain the body. The rest follows.';
+    case 'palisade':  case 'Palisade':    return 'Strike me again. I have not moved.';
+    case 'mycelian':  case 'Mycelian':    return 'Growth is patient. Growth is inevitable.';
+    case 'wizard':    case 'Wizard':      return 'The chain is longer than you think.';
+    case 'nonsequiteur': case 'Nonsequiteur': return 'Predictability is the enemy of survival.';
+    case 'soothscribe': case 'Soothscribe': return 'The cards show what you refuse to see.';
+    case 'meatwalker': case 'Meatwalker': return 'I have been through worse. Much worse.';
+    case 'shrink':    case 'Shrink':      return 'The mind is the first battlefield.';
+    case 'kemetic':   case 'Kemetic':     return 'What dies feeds what lives.';
+    case 'greenjay':  case 'Greenjay':    return 'I have fallen before. That is not new.';
+    case 'sysiphuge': case 'Sysiphuge':   return 'You cannot hit what you cannot predict.';
+    case 'bombador':  case 'Bombador':    return 'Close enough is exactly right.';
+    case 'griot':     case 'Griot':       return 'Every ending is a beginning with good posture.';
+    case 'paeg':      case 'Pæg':         return 'Small things accumulate.';
+    default:                              return 'The saga continues.';
+  }
+}
+
+/**
  * Derives an emergent buff from the hero's current stat distribution.
  * The highest nonzero stat gets +2; the lowest nonzero stat gets +1.
  * This gives players a second option driven by how the hero has actually grown.

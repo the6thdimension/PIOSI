@@ -7,7 +7,7 @@ import { updateModeUpHeroDisplay } from './modeUpUI.js';
 import { applyModeUp, getModeUpOptions } from './modeup.js';
 import { BattleEngine } from './battleEngine.js';
 import { SummitMode } from './summitMode.js';
-import { getGriotReaction } from './griot.js';
+import { getGriotReaction, commentOn } from './griot.js';
 
 export function initializeBattle() {
   const settings = state.getLevel(state.level);
@@ -15,14 +15,31 @@ export function initializeBattle() {
     showScreen('victory');
     return;
   }
-  const { rows, cols, wallHP, title, enemies: levelEnemies, layout } = settings;
+  const { rows, cols, wallHP, title, subtitle, enemies: levelEnemies, layout } = settings;
   document.getElementById('level-title').textContent = title;
+
+  // LEVEL EPITAPH (enhancement #7): show subtitle briefly then fade
+  const subtitleEl = document.getElementById('level-subtitle');
+  if (subtitleEl) {
+    subtitleEl.textContent = subtitle || '';
+    subtitleEl.classList.toggle('visible', !!subtitle);
+    if (subtitle) setTimeout(() => subtitleEl.classList.remove('visible'), 3500);
+  }
+
   state.enemies = levelEnemies;
+
+  // Narrator callback: routes commentOn events to the battle log as styled griot lines
+  const narratorCallback = (event) => {
+    const line = commentOn(event);
+    if (line) logMessage(`[℣] ${line}`);
+  };
+
   state.battleEngine = new BattleEngine(
     state.party, state.enemies,
     rows, cols, wallHP,
     logMessage, onLevelComplete, onGameOver,
-    layout || null
+    layout || null,
+    narratorCallback
   );
   renderBattlefield();
 

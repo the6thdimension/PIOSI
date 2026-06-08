@@ -1310,3 +1310,57 @@ button:active {
 .grid-cell {
   transition: background-color 0.12s ease, opacity 0.12s ease;
 }
+
+/* ── Level epitaph subtitle ──────────────────────────────── */
+
+#level-subtitle {
+  font-size: 0.78rem;
+  color: rgba(200,180,140,0);
+  font-style: italic;
+  letter-spacing: 0.06em;
+  margin: -6px 0 10px;
+  transition: color 1.2s ease, opacity 1.2s ease;
+  opacity: 0;
+  min-height: 1.2em;
+}
+
+#level-subtitle.visible {
+  color: rgba(200,180,140,0.75);
+  opacity: 1;
+}
+
+/* ── Mode Up monologue pull-quote ────────────────────────── */
+
+.modeup-monologue {
+  font-style: italic;
+  color: #c8c0a0;
+  font-size: 0.9rem;
+  border-left: 2px solid #c8a84a;
+  margin: 4px 0 12px 0;
+  padding: 4px 0 4px 12px;
+  text-align: left;
+  line-height: 1.5;
+}
+
+/* ── Last words log entry ────────────────────────────────── */
+
+#log .last-words-entry {
+  color: #b8a090;
+  font-style: italic;
+  font-size: 0.88rem;
+  border-left: 2px solid #6a4a3a;
+  padding-left: 6px;
+  margin: 2px 0;
+  opacity: 0.9;
+}
+
+/* ── Narrator / Griot commentary log entry ───────────────── */
+
+#log .narrator-log-entry {
+  color: #a0b8c8;
+  font-style: italic;
+  font-size: 0.82rem;
+  letter-spacing: 0.03em;
+  opacity: 0.85;
+  margin: 1px 0;
+}

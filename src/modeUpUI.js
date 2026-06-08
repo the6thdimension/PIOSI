@@ -1,5 +1,5 @@
 import { state } from './state.js';
-import { getModeUpOptions } from './modeup.js';
+import { getModeUpOptions, getModeUpLine } from './modeup.js';
 import { getCompleteStats } from './renderer.js';
 
 function buffLabel(buff) {
@@ -50,8 +50,11 @@ export function updateModeUpHeroDisplay() {
     statEntry('Bomba',   stats.bomba,   activeBuff.bomba),
   ].join('');
 
+  const monologue = getModeUpLine(hero);
+
   document.getElementById('mode-up-hero-display').innerHTML = `
     <p class="highlight">${hero.name} (${hero.symbol})</p>
+    ${monologue ? `<blockquote class="modeup-monologue">${monologue}</blockquote>` : ''}
     <div class="modeup-options">
       <div class="modeup-option${optIdx === 0 ? ' active' : ''}" data-opt="0">
         <div class="modeup-option-label">⚔ Destiny Path</div>
