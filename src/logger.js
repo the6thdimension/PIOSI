@@ -9,6 +9,10 @@ const _PINNED_MAX = 3;
 const _IMPORTANT_RE = /turn begins|'s turn|wall collapses|wall hp|level \d|complete!|game over|enters the field|is defeated|is dead|now it's|says:/i;
 // Interaction announcement prefix — emitted by battleEngine for multi-stat combos
 const _INTERACTION_RE = /^\[⚡ INTERACTION\]/;
+// Narrator/Griot commentary prefix
+const _NARRATOR_RE = /^\[℣\]/;
+// Last words prefix
+const _LAST_WORDS_RE = /^\[LAST WORDS\]/;
 
 export function logMessage(message) {
   const logDiv = document.getElementById('log');
@@ -22,6 +26,21 @@ export function logMessage(message) {
     );
   if (isEnemyMsg) {
     line.className = 'enemy-log-entry';
+  } else if (_LAST_WORDS_RE.test(message)) {
+    line.className = 'last-words-entry';
+    line.textContent = message.replace(_LAST_WORDS_RE, '').trim();
+    logDiv.appendChild(line);
+    while (logDiv.children.length > 220) logDiv.removeChild(logDiv.firstChild);
+    logDiv.scrollTop = logDiv.scrollHeight;
+    return;
+  } else if (_NARRATOR_RE.test(message)) {
+    // Griot narrator commentary — styled as a dramatic aside
+    line.className = 'narrator-log-entry';
+    line.textContent = message.replace(_NARRATOR_RE, '℣').trim();
+    logDiv.appendChild(line);
+    while (logDiv.children.length > 220) logDiv.removeChild(logDiv.firstChild);
+    logDiv.scrollTop = logDiv.scrollHeight;
+    return;
   } else if (_INTERACTION_RE.test(message)) {
     // Multi-stat interaction announcement: highlight and auto-pin
     line.className = 'interaction-log-entry';

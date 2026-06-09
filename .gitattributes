@@ -1,0 +1,7 @@
+# Shell launchers MUST use LF line endings — CRLF breaks the shebang on macOS/Linux
+# ("bad interpreter: /bin/bash^M"). Force LF regardless of platform git settings.
+*.command text eol=lf
+*.sh      text eol=lf
+
+# Windows batch files should keep CRLF.
+*.bat     text eol=crlf

@@ -1,5 +1,18 @@
 import { state } from './state.js';
 
+// Render-cache signatures. The party cards and the HUD party list only change
+// when a hero's hp / armor / active-turn / death / status / stats change — not
+// on every move. Memoizing by signature avoids rebuilding sprite <img> nodes
+// (and the decode/flicker that causes) on intra-turn movement.
+let _partyCardsSig = null;
+let _hudPartySig = null;
+
+/** Reset render memo caches — called when a new battle starts. */
+export function resetRenderCaches() {
+  _partyCardsSig = null;
+  _hudPartySig = null;
+}
+
 export function getCompleteStats(hero) {
   return {
     attack: hero.attack || 0,
@@ -70,18 +83,26 @@ export function updateBattleHUD() {
 
   const partyDiv = document.getElementById('hud-party');
   if (partyDiv) {
-    partyDiv.innerHTML = '<div class="hud-panel-title">PARTY</div>' +
-      party.map((h, i) => {
-        const isActive = i === battleEngine.currentUnit && !h.persistentDeath;
-        const isDead = !!h.persistentDeath;
-        const cls = isDead ? 'hud-hero hud-hero-dead' : isActive ? 'hud-hero hud-hero-active' : 'hud-hero';
-        const statusEffectsText = h.statusEffects ? Object.keys(h.statusEffects).join(' ') : '';
-        return `<div class="${cls}">` +
-          `<div class="hud-hero-name">${h.symbol} ${h.name}</div>` +
-          `<div class="hud-hero-stats"><span>HP: ${h.hp}</span>${h.armor ? `<span>ARM: ${h.armor}</span>` : ''}</div>` +
-          (statusEffectsText ? `<div class="hud-hero-fx">${statusEffectsText}</div>` : '') +
-          '</div>';
-      }).join('');
+    const sig = party.map((h, i) => {
+      const active = i === battleEngine.currentUnit && !h.persistentDeath ? 1 : 0;
+      const fx = h.statusEffects ? Object.keys(h.statusEffects).join(',') : '';
+      return `${h.hp}|${h.armor || 0}|${active}|${h.persistentDeath ? 1 : 0}|${fx}`;
+    }).join(';');
+    if (sig !== _hudPartySig) {
+      _hudPartySig = sig;
+      partyDiv.innerHTML = '<div class="hud-panel-title">PARTY</div>' +
+        party.map((h, i) => {
+          const isActive = i === battleEngine.currentUnit && !h.persistentDeath;
+          const isDead = !!h.persistentDeath;
+          const cls = isDead ? 'hud-hero hud-hero-dead' : isActive ? 'hud-hero hud-hero-active' : 'hud-hero';
+          const statusEffectsText = h.statusEffects ? Object.keys(h.statusEffects).join(' ') : '';
+          return `<div class="${cls}">` +
+            `<div class="hud-hero-name">${h.symbol} ${h.name}</div>` +
+            `<div class="hud-hero-stats"><span>HP: ${h.hp}</span>${h.armor ? `<span>ARM: ${h.armor}</span>` : ''}</div>` +
+            (statusEffectsText ? `<div class="hud-hero-fx">${statusEffectsText}</div>` : '') +
+            '</div>';
+        }).join('');
+    }
   }
 }
 
@@ -89,6 +110,15 @@ export function renderPartyCards() {
   const { battleEngine, party } = state;
   const cardsEl = document.getElementById('party-cards');
   if (!cardsEl || !battleEngine || !party.length) return;
+
+  // Skip the (sprite-heavy) rebuild unless party state actually changed.
+  const sig = party.map((hero, index) => {
+    const isActive = index === battleEngine.currentUnit && !hero.persistentDeath ? 1 : 0;
+    const isDead = (hero.hp <= 0 || !!hero.persistentDeath) ? 1 : 0;
+    return `${hero.hp}|${hero.armor || 0}|${isActive}|${isDead}|${Object.values(getCompleteStats(hero)).join(',')}`;
+  }).join(';');
+  if (sig === _partyCardsSig) return;
+  _partyCardsSig = sig;
 
   cardsEl.innerHTML = party.map((hero, index) => {
     const stats = getCompleteStats(hero);

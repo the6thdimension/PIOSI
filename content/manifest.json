@@ -6,7 +6,8 @@
     "modeUp": true,
     "worldMap": true,
     "summit": false,
-    "emanations": false
+    "emanations": false,
+    "heroUnlocks": true
   },
   "coreLevels": 6
 }

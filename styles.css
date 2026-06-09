@@ -56,7 +56,7 @@ body {
   left: 0;
   width: 100%; /* Full width */
   height: 100%; /* Full height */
-  background: url('IMG_0905.JPG') no-repeat center center; /* Background image settings */
+  background: url('assets/images/IMG_0905.JPG') no-repeat center center; /* Background image settings */
   background-size: cover; /* Ensure background covers entire element */
   filter: blur(20px); /* Apply blur effect to the background image */
   opacity: 0.7; /* Set opacity for a subtle background */
@@ -70,7 +70,7 @@ body {
   height: 80%; /* Height relative to its container */
   max-width: 80vh; /* Maximum width relative to viewport height */
   max-height: 80vw; /* Maximum height relative to viewport width */
-  background: url('IMG_0905.JPG') no-repeat center center; /* Background image settings */
+  background: url('assets/images/IMG_0905.JPG') no-repeat center center; /* Background image settings */
   background-size: contain; /* Ensure the image is contained within the box */
   z-index: 1; /* Position on top of pseudo-elements */
 }
@@ -83,7 +83,7 @@ body {
   left: -20%; /* Offset from left */
   width: 140%; /* Extend width beyond container bounds */
   height: 140%; /* Extend height beyond container bounds */
-  background: url('IMG_0905.JPG') no-repeat center center; /* Use the same background image */
+  background: url('assets/images/IMG_0905.JPG') no-repeat center center; /* Use the same background image */
   background-size: cover; /* Cover entire area */
   opacity: 0.1; /* Low opacity for a subtle effect */
   animation: static-noise 10s linear infinite; /* Apply static noise animation */
@@ -1290,7 +1290,7 @@ button:active {
 }
 
 #mode-up-window.modeup-pulse {
-  animation: modeup-pulse 0.6s ease-out forwards;
+  animation: modeup-pulse 0.45s ease-out forwards;
 }
 
 /* ── Interaction log entries (⚡ multi-stat combos) ────────── */
@@ -1309,4 +1309,255 @@ button:active {
 
 .grid-cell {
   transition: background-color 0.12s ease, opacity 0.12s ease;
+}
+
+/* ── Level epitaph subtitle ──────────────────────────────── */
+
+#level-subtitle {
+  font-size: 0.78rem;
+  color: rgba(200,180,140,0);
+  font-style: italic;
+  letter-spacing: 0.06em;
+  margin: -6px 0 10px;
+  transition: color 1.2s ease, opacity 1.2s ease;
+  opacity: 0;
+  min-height: 1.2em;
+}
+
+#level-subtitle.visible {
+  color: rgba(200,180,140,0.75);
+  opacity: 1;
+}
+
+/* ── Mode Up monologue pull-quote ────────────────────────── */
+
+.modeup-monologue {
+  font-style: italic;
+  color: #c8c0a0;
+  font-size: 0.9rem;
+  border-left: 2px solid #c8a84a;
+  margin: 4px 0 12px 0;
+  padding: 4px 0 4px 12px;
+  text-align: left;
+  line-height: 1.5;
+}
+
+/* ── Last words log entry ────────────────────────────────── */
+
+#log .last-words-entry {
+  color: #b8a090;
+  font-style: italic;
+  font-size: 0.88rem;
+  border-left: 2px solid #6a4a3a;
+  padding-left: 6px;
+  margin: 2px 0;
+  opacity: 0.9;
+}
+
+/* ── Narrator / Griot commentary log entry ───────────────── */
+
+#log .narrator-log-entry {
+  color: #a0b8c8;
+  font-style: italic;
+  font-size: 0.82rem;
+  letter-spacing: 0.03em;
+  opacity: 0.85;
+  margin: 1px 0;
+}
+
+/* ── Inter-level dispatch screen ─────────────────────────── */
+
+#dispatch-screen {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: radial-gradient(ellipse at center, #0a0a12 0%, #050507 100%);
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  animation: dispatch-fade-in 0.8s ease;
+}
+
+@keyframes dispatch-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.dispatch-frame {
+  max-width: 620px;
+  width: 86%;
+  padding: 40px 36px;
+  text-align: center;
+  border-top: 1px solid #3a3a55;
+  border-bottom: 1px solid #3a3a55;
+  background: rgba(20, 18, 30, 0.4);
+}
+
+.dispatch-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.4em;
+  color: #c8a84a;
+  margin-bottom: 22px;
+  opacity: 0.8;
+}
+
+#dispatch-text {
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: #d8d0e0;
+  font-style: italic;
+  letter-spacing: 0.02em;
+  margin: 0 0 28px;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.6);
+  animation: dispatch-text-rise 1.2s ease 0.3s both;
+}
+
+@keyframes dispatch-text-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.dispatch-continue {
+  font-size: 0.68rem;
+  letter-spacing: 0.28em;
+  color: #5a5a72;
+  margin: 0;
+  animation: dispatch-blink 2s ease-in-out infinite;
+}
+
+@keyframes dispatch-blink {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 1; }
+}
+
+/* ── Post-mortem (run summary on game-over / victory) ─────── */
+
+.post-mortem-wrap { display: flex; justify-content: center; margin: 14px 0; }
+
+.post-mortem {
+  width: 100%;
+  max-width: 420px;
+  background: rgba(0,0,0,0.32);
+  border: 1px solid #2e2e44;
+  border-radius: 6px;
+  padding: 14px 18px;
+  text-align: left;
+}
+
+.pm-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  font-size: 0.9rem;
+}
+.pm-stat:last-of-type { border-bottom: none; }
+.pm-k { color: #8890a8; letter-spacing: 0.04em; text-transform: uppercase; font-size: 0.74rem; }
+.pm-v { color: #d8dce8; font-weight: 600; }
+
+.pm-unlocks {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #4a3a10;
+  text-align: center;
+}
+.pm-unlocks-title {
+  color: #c8a84a;
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  margin-bottom: 8px;
+}
+.pm-unlock {
+  color: #f0d878;
+  font-weight: 700;
+  font-size: 1.05rem;
+  padding: 3px 0;
+  animation: dispatch-text-rise 0.5s ease both;
+  text-shadow: 0 0 16px rgba(240,200,80,0.4);
+}
+
+.pm-next {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  text-align: center;
+  font-size: 0.82rem;
+  color: #a8b0c0;
+}
+.pm-next b { color: #d8dce8; }
+.pm-hint { font-style: italic; color: #8890a8; }
+.pm-prog { color: #c8a84a; font-weight: 600; }
+
+.restart-hint {
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  color: #6a6a82;
+}
+
+/* ── Locked heroes in party select ───────────────────────── */
+
+.spotlight-hero.locked .spotlight-sprite,
+.spotlight-hero.locked .spotlight-symbol {
+  filter: grayscale(1) brightness(0.35);
+  opacity: 0.7;
+}
+.spotlight-hero.locked .spotlight-glow { opacity: 0.15; }
+
+.action-locked {
+  color: #c8a84a;
+  font-size: 0.82rem;
+  font-style: italic;
+}
+.lock-prog { color: #8890a8; font-style: normal; font-weight: 600; }
+
+.stage-figure.locked {
+  filter: brightness(0.12) saturate(0);
+  position: relative;
+}
+.stage-figure.locked.center-stage {
+  filter: brightness(0.3) saturate(0.2);
+}
+.lock-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  font-size: 0.7rem;
+  opacity: 0.85;
+  filter: none;
+}
+
+/* ── Hero history (lore) panel in party select ───────────── */
+
+.spotlight-name.has-lore {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.spotlight-name.has-lore:hover,
+.spotlight-name.lore-open {
+  color: #c8a84a;
+}
+
+.lore-glyph {
+  font-size: 0.7em;
+  opacity: 0.55;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+.hero-lore {
+  font-style: italic;
+  font-size: 0.84rem;
+  line-height: 1.6;
+  color: #b8b0c8;
+  background: rgba(0,0,0,0.3);
+  border-left: 2px solid #c8a84a;
+  padding: 10px 14px;
+  margin: 6px 0 10px;
+  text-align: left;
+  max-height: 200px;
+  overflow-y: auto;
+  animation: dispatch-text-rise 0.4s ease both;
 }

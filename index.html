@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>PIOSI - THE SAGAS CONTINUE</title>
+    <!-- Inline favicon (gold brick-wall motif) — avoids a 404 on /favicon.ico -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='16'%20height='16'%3E%3Crect%20width='16'%20height='16'%20fill='%230a0a12'/%3E%3Crect%20x='2'%20y='3'%20width='5'%20height='3'%20fill='%23c8a84a'/%3E%3Crect%20x='9'%20y='3'%20width='5'%20height='3'%20fill='%23c8a84a'/%3E%3Crect%20x='2'%20y='10'%20width='5'%20height='3'%20fill='%23c8a84a'/%3E%3Crect%20x='9'%20y='10'%20width='5'%20height='3'%20fill='%23c8a84a'/%3E%3Crect%20x='6'%20y='6'%20width='4'%20height='3'%20fill='%23c8a84a'/%3E%3C/svg%3E" />
     <!-- Load the extra light (200) version of the Sono font from Google Fonts -->
     <link
       href="https://fonts.googleapis.com/css2?family=Sono:wght@200&display=swap"
@@ -18,7 +20,7 @@
         <div class="static-noise"></div>
       </div>
       <p id="title-griot" class="title-griot"></p>
-      <p>PRESS SPACE</p>
+      <p>CLICK OR PRESS SPACE</p>
     </div>
 
     <!-- Party Selection Screen -->
@@ -40,6 +42,7 @@
     <!-- Battle Screen -->
     <div id="game-container">
       <h1 id="level-title">Level Title</h1>
+      <p id="level-subtitle" class="level-subtitle"></p>
       <div id="battle-options-wrap">
         <button id="options-toggle-btn" title="Battle Options" aria-label="Battle Options">⚙ Options</button>
         <div id="options-panel" class="hidden">
@@ -77,12 +80,22 @@
       </div>
     </div>
 
+    <!-- Inter-level Dispatch Screen -->
+    <div id="dispatch-screen">
+      <div class="dispatch-frame">
+        <div class="dispatch-label">⟢ DISPATCH ⟣</div>
+        <p id="dispatch-text"></p>
+        <p class="dispatch-continue">PRESS SPACE TO CONTINUE</p>
+      </div>
+    </div>
+
     <!-- Victory Screen -->
     <div id="victory">
       <h1>Victory!</h1>
       <p>Congratulations! All levels have been completed!</p>
+      <div id="victory-summary" class="post-mortem-wrap"></div>
       <p id="victory-griot" class="griot-line"></p>
-      <p>Press Spacebar to Restart</p>
+      <p class="restart-hint">Space — new company &nbsp;·&nbsp; R — same company again</p>
     </div>
 
     <!-- World Map Screen -->
@@ -113,8 +126,10 @@
     <!-- Game Over Screen -->
     <div id="game-over">
       <h1>Game Over</h1>
-      <p>All your heroes have been defeated.<br />Press Spacebar to Restart.</p>
+      <p>All your heroes have been defeated.</p>
+      <div id="game-over-summary" class="post-mortem-wrap"></div>
       <p id="game-over-griot" class="griot-line"></p>
+      <p class="restart-hint">Space — new company &nbsp;·&nbsp; R — same company again</p>
     </div>
 
     <!-- Mode Up Window -->
@@ -146,13 +161,30 @@
       import { initializeGriot, getGriotReaction } from './src/griot.js';
       import { showScreen } from './src/screenManager.js';
       import { initInputHandler } from './src/inputHandler.js';
+      import { loadMeta, saveMeta } from './src/persistence.js';
+      import { getStarterHeroIds } from './src/unlocks.js';
 
       Promise.all([
         initializeGriot('content/fantasy_narrative.txt'),
-        loadContent().then(({ manifest, heroes, getLevel }) => {
+        loadContent().then(({ manifest, heroes, getLevel, dispatches }) => {
           state.loadedManifest = manifest;
           state.allHeroes = heroes;
           state.getLevel = getLevel;
+          state.dispatches = dispatches || [];
+          // Warm the browser cache so sprites never fetch mid-battle (no flicker/pop).
+          (heroes || []).forEach(h => { if (h.sprite) { const im = new Image(); im.src = h.sprite; } });
+          // Meta-progression: load saved unlocks; seed the starter roster on first launch.
+          const unlocksOn = !!(manifest.modes && manifest.modes.heroUnlocks);
+          const meta = loadMeta();
+          if (!meta.unlockedHeroes || meta.unlockedHeroes.length === 0) {
+            meta.unlockedHeroes = getStarterHeroIds(heroes);
+            saveMeta(meta);
+          }
+          state.metaProgress = meta;
+          state.unlocksEnabled = unlocksOn;
+          state.unlockedHeroes = unlocksOn
+            ? meta.unlockedHeroes.slice()
+            : heroes.map(h => h.id || h.name);
         }).catch(() => {
           console.warn('Content loading failed; using static fallback data.');
         }),

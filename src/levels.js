@@ -59,7 +59,10 @@ function generateLevelLayout(rows, cols, minRoomSize, maxRoomSize, numRooms, wal
         }
       }
       if (isWall) {
-        layout[y][x] = { type: "wall", hp: wallHP }; // Mark as a "wall"
+        // Layout walls are destructible obstacles with their OWN HP (the engine no
+        // longer pools them into the objective wallHP), so keep it modest/breakable
+        // rather than the whole level's wallHP — otherwise mazes become impassable.
+        layout[y][x] = { type: "wall", hp: 30 };
       }
     }
   }

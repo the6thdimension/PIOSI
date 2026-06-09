@@ -142,5 +142,13 @@ export async function loadContent() {
   // makeLevelGetter falls back to static levels.js for anything not in JSON
   const getLevel = makeLevelGetter(allLoadedLevels);
 
-  return { manifest, heroes, getLevel };
+  // 4. Load inter-level dispatches (optional; empty array if absent)
+  const dispatchData = await fetchJSON("./content/dispatches.core.json");
+  const dispatches = (dispatchData && Array.isArray(dispatchData.dispatches))
+    ? dispatchData.dispatches : [];
+  if (!dispatchData) {
+    console.warn('[contentLoader] No dispatches pack found; inter-level dispatches disabled.');
+  }
+
+  return { manifest, heroes, getLevel, dispatches };
 }

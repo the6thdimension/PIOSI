@@ -3,6 +3,7 @@
     {
       "level": 1,
       "title": "Level 1: The Breaking Wall",
+      "subtitle": "Where the first sagas began and were forgotten.",
       "rows": 5,
       "cols": 5,
       "wallHP": 20,
@@ -11,6 +12,7 @@
     {
       "level": 2,
       "title": "Level 2: The Reinforced Barricade",
+      "subtitle": "Three companies tried this crossing. None spoke of it after.",
       "rows": 7,
       "cols": 12,
       "wallHP": 40,
@@ -22,6 +24,7 @@
           "range": 1,
           "hp": 12,
           "agility": 2,
+          "epithet": "the Hungry",
           "enemyXOffset": 3
         },
         {
@@ -31,6 +34,7 @@
           "range": 1,
           "hp": 12,
           "agility": 2,
+          "epithet": "of the Pale Road",
           "enemyXOffset": 5
         }
       ]
@@ -38,6 +42,7 @@
     {
       "level": 3,
       "title": "Level 3: The Vertical Corridor",
+      "subtitle": "They called it the Throat. For obvious reasons.",
       "rows": 14,
       "cols": 4,
       "wallHP": 60,
@@ -49,6 +54,7 @@
           "range": 1,
           "hp": 55,
           "agility": 22,
+          "epithet": "the Relentless",
           "x": 0,
           "y": 7
         },
@@ -79,6 +85,7 @@
           "range": 1,
           "hp": 55,
           "agility": 22,
+          "epithet": "Last-of-Four",
           "x": 3,
           "y": 7
         }
@@ -87,21 +94,16 @@
     {
       "level": 4,
       "title": "Level 4: The Flanking Rooms",
+      "subtitle": "Built to trap those who came in single file.",
       "rows": 9,
       "cols": 14,
       "wallHP": 80,
-      "layout": [
-        "██████████████",
-        "█........█....█",
-        "█........█....█",
-        "█........░....█",
-        "█........█....█",
-        "█........░....█",
-        "█........█....█",
-        "█........█....█",
-        "██████████████"
-      ],
       "enemies": [
+        { "name": "Wall", "symbol": "█", "attack": 0, "range": 0, "hp": 25, "agility": 0, "x": 6, "y": 1 },
+        { "name": "Wall", "symbol": "█", "attack": 0, "range": 0, "hp": 25, "agility": 0, "x": 6, "y": 2 },
+        { "name": "Wall", "symbol": "█", "attack": 0, "range": 0, "hp": 25, "agility": 0, "x": 6, "y": 3 },
+        { "name": "Wall", "symbol": "█", "attack": 0, "range": 0, "hp": 25, "agility": 0, "x": 6, "y": 5 },
+        { "name": "Wall", "symbol": "█", "attack": 0, "range": 0, "hp": 25, "agility": 0, "x": 6, "y": 6 },
         {
           "name": "Flanker",
           "symbol": "Ͻ",
@@ -109,6 +111,7 @@
           "range": 1,
           "hp": 18,
           "agility": 3,
+          "epithet": "the Swift",
           "x": 10,
           "y": 2
         },
@@ -119,6 +122,7 @@
           "range": 1,
           "hp": 18,
           "agility": 3,
+          "epithet": "the Patient",
           "x": 10,
           "y": 6
         },
@@ -129,6 +133,7 @@
           "range": 2,
           "hp": 30,
           "agility": 2,
+          "epithet": "Hollow-Helm",
           "x": 12,
           "y": 4
         }
@@ -137,24 +142,17 @@
     {
       "level": 5,
       "title": "Level 5: The Arena of Echoes",
+      "subtitle": "The crowd stopped coming after the third season. The fighters did not.",
       "rows": 12,
       "cols": 18,
       "wallHP": 120,
-      "layout": [
-        "██████████████████",
-        "█................█",
-        "█..██..........██.█",
-        "█..█............█.█",
-        "█................█",
-        "█....██████████...█",
-        "█....█........█...█",
-        "█....██████████...█",
-        "█................█",
-        "█..█............█.█",
-        "█..██..........██.█",
-        "██████████████████"
-      ],
       "enemies": [
+        { "name": "Pillar", "symbol": "█", "attack": 0, "range": 0, "hp": 25, "agility": 0, "x": 8, "y": 3 },
+        { "name": "Pillar", "symbol": "█", "attack": 0, "range": 0, "hp": 25, "agility": 0, "x": 9, "y": 3 },
+        { "name": "Pillar", "symbol": "█", "attack": 0, "range": 0, "hp": 25, "agility": 0, "x": 8, "y": 7 },
+        { "name": "Pillar", "symbol": "█", "attack": 0, "range": 0, "hp": 25, "agility": 0, "x": 9, "y": 7 },
+        { "name": "Pillar", "symbol": "█", "attack": 0, "range": 0, "hp": 25, "agility": 0, "x": 12, "y": 4 },
+        { "name": "Pillar", "symbol": "█", "attack": 0, "range": 0, "hp": 25, "agility": 0, "x": 12, "y": 6 },
         {
           "name": "Arena Guard",
           "symbol": "Ꞩ",
@@ -162,6 +160,7 @@
           "range": 1,
           "hp": 22,
           "agility": 4,
+          "epithet": "the Unbroken",
           "x": 14,
           "y": 2
         },
@@ -172,6 +171,7 @@
           "range": 1,
           "hp": 22,
           "agility": 4,
+          "epithet": "Twice-Scarred",
           "x": 14,
           "y": 9
         },
@@ -183,6 +183,7 @@
           "hp": 45,
           "agility": 2,
           "armor": 2,
+          "epithet": "of the Long Silence",
           "x": 16,
           "y": 5
         }
@@ -191,20 +192,17 @@
     {
       "level": 6,
       "title": "Level 6: The Breach",
+      "subtitle": "A wound in the stone that never healed. Neither did those who held it.",
       "rows": 8,
       "cols": 16,
       "wallHP": 150,
-      "layout": [
-        "████████████████",
-        "█..............█",
-        "█...████████...█",
-        "█...█......█...█",
-        "█...█......█...█",
-        "█...████████...█",
-        "█..............█",
-        "████████████████"
-      ],
       "enemies": [
+        { "name": "Bastion", "symbol": "█", "attack": 0, "range": 0, "hp": 30, "agility": 0, "x": 10, "y": 1 },
+        { "name": "Bastion", "symbol": "█", "attack": 0, "range": 0, "hp": 30, "agility": 0, "x": 10, "y": 2 },
+        { "name": "Bastion", "symbol": "█", "attack": 0, "range": 0, "hp": 30, "agility": 0, "x": 10, "y": 4 },
+        { "name": "Bastion", "symbol": "█", "attack": 0, "range": 0, "hp": 30, "agility": 0, "x": 10, "y": 5 },
+        { "name": "Bastion", "symbol": "█", "attack": 0, "range": 0, "hp": 30, "agility": 0, "x": 11, "y": 1 },
+        { "name": "Bastion", "symbol": "█", "attack": 0, "range": 0, "hp": 30, "agility": 0, "x": 11, "y": 5 },
         {
           "name": "Warden",
           "symbol": "Ŵ",
@@ -212,6 +210,7 @@
           "range": 3,
           "hp": 28,
           "agility": 2,
+          "epithet": "of the First Watch",
           "x": 12,
           "y": 2
         },
@@ -222,6 +221,7 @@
           "range": 3,
           "hp": 28,
           "agility": 2,
+          "epithet": "of the Last Watch",
           "x": 12,
           "y": 5
         },
@@ -234,6 +234,7 @@
           "agility": 3,
           "armor": 3,
           "burn": 1,
+          "epithet": "the Unmoved",
           "x": 14,
           "y": 3
         }

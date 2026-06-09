@@ -1084,3 +1084,108 @@ describe('chain damage formula', () => {
     assert.equal(chainMultiplier(0), 0);
   });
 });
+
+// ─── Two wall types: breaking wall (ᚙ) vs static wall (█) ─────────────────────
+
+describe('wall type distinction', () => {
+  function makeWall(x, y, hp = 25) {
+    return makeEnemy(x, y, { name: 'Wall', symbol: '█', attack: 0, range: 0, hp, agility: 0 });
+  }
+  function clearItems(engine, rows, cols) {
+    for (let y = 0; y < rows; y++)
+      for (let x = 0; x < cols; x++) {
+        const c = engine.battlefield[y][x];
+        if (c === 'ౚ' || c === 'ඉ') engine.battlefield[y][x] = '.';
+      }
+  }
+
+  test('attacking a static wall (█) damages its own HP, not the objective wallHP', async () => {
+    let levelDone = false;
+    const hero = makeHero({ attack: 5, range: 2 });
+    const wall = makeWall(1, 0, 25);
+    const engine = new BattleEngine([hero], [wall], 5, 8, 50,
+      () => {}, () => { levelDone = true; }, () => {});
+    engine.shortPause = () => Promise.resolve();
+    clearItems(engine, 5, 8);
+    place(engine, hero, 0, 0);
+    place(engine, wall, 1, 0);
+    await engine.attackInDirection(1, 0, hero, async () => {});
+    assert.equal(wall.hp, 20);       // the static wall took the hit
+    assert.equal(engine.wallHP, 50); // the objective wall is untouched
+    assert.equal(levelDone, false);  // and the level did NOT complete
+  });
+
+  test('walking into a static wall (█) is blocked and never drains wallHP or completes the level', () => {
+    let levelDone = false;
+    const hero = makeHero({ attack: 7 });
+    const wall = makeWall(1, 0, 25);
+    const engine = new BattleEngine([hero], [wall], 5, 8, 50,
+      () => {}, () => { levelDone = true; }, () => {});
+    engine.shortPause = () => Promise.resolve();
+    clearItems(engine, 5, 8);
+    place(engine, hero, 0, 0);
+    place(engine, wall, 1, 0);
+    engine.moveUnit(1, 0);           // try to walk right into the static wall
+    assert.equal(hero.x, 0);         // blocked — did not move
+    assert.equal(engine.wallHP, 50); // objective wall untouched
+    assert.equal(wall.hp, 25);       // static wall unharmed by walking
+    assert.equal(levelDone, false);
+  });
+
+  test('walking into the breaking wall (ᚙ) DOES drain the objective wallHP (the contrast)', () => {
+    const hero = makeHero({ attack: 6 });
+    const { engine } = makeEngine([hero], [], { rows: 5, cols: 8, wallHP: 50 });
+    place(engine, hero, 0, 3);       // directly above the bottom-row ᚙ wall
+    engine.moveUnit(0, 1);           // move down into the breaking wall
+    assert.equal(engine.wallHP, 44); // objective wall takes the damage
+  });
+
+  test('attacking a layout wall (#) damages its own HP, never the objective or the level', async () => {
+    let levelDone = false;
+    const hero = makeHero({ attack: 10, range: 2 });
+    const layout = [[null, { type: 'wall', hp: 15 }]]; // wall at (1,0)
+    const engine = new BattleEngine([hero], [], 5, 8, 50,
+      () => {}, () => { levelDone = true; }, () => {}, layout);
+    engine.shortPause = () => Promise.resolve();
+    clearItems(engine, 5, 8);
+    place(engine, hero, 0, 0);
+    assert.equal(engine.battlefield[0][1], '#');     // layout wall placed
+    await engine.attackInDirection(1, 0, hero, async () => {});
+    assert.equal(engine.layoutWalls['1,0'], 5);      // 15 - 10, its own HP pool
+    assert.equal(engine.battlefield[0][1], '#');     // still standing
+    assert.equal(engine.wallHP, 50);                 // objective untouched
+    assert.equal(levelDone, false);                  // level NOT completed
+  });
+
+  test('destroying a layout wall (#) clears the cell without completing the level', async () => {
+    let levelDone = false;
+    const hero = makeHero({ attack: 20, range: 2 });
+    const layout = [[null, { type: 'wall', hp: 15 }]];
+    const engine = new BattleEngine([hero], [], 5, 8, 50,
+      () => {}, () => { levelDone = true; }, () => {}, layout);
+    engine.shortPause = () => Promise.resolve();
+    clearItems(engine, 5, 8);
+    place(engine, hero, 0, 0);
+    await engine.attackInDirection(1, 0, hero, async () => {});
+    assert.equal(engine.battlefield[0][1], '.');     // crumbled away
+    assert.equal(engine.layoutWalls['1,0'], undefined);
+    assert.equal(engine.wallHP, 50);                 // objective untouched
+    assert.equal(levelDone, false);                  // level NOT completed
+  });
+
+  test('walking into a layout wall (#) drains its own HP, not the objective', () => {
+    let levelDone = false;
+    const hero = makeHero({ attack: 5 });
+    const layout = [[null, { type: 'wall', hp: 40 }]];
+    const engine = new BattleEngine([hero], [], 5, 8, 50,
+      () => {}, () => { levelDone = true; }, () => {}, layout);
+    engine.shortPause = () => Promise.resolve();
+    clearItems(engine, 5, 8);
+    place(engine, hero, 0, 0);
+    engine.moveUnit(1, 0);                           // walk into the layout wall
+    assert.equal(engine.layoutWalls['1,0'], 35);     // its own HP took the hit
+    assert.equal(engine.wallHP, 50);                 // objective untouched
+    assert.equal(hero.x, 0);                         // blocked — did not move through
+    assert.equal(levelDone, false);
+  });
+});

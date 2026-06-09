@@ -6,7 +6,7 @@ import { updateHeroDisplay, selectHero } from './partySelectUI.js';
 import { updateModeUpHeroDisplay } from './modeUpUI.js';
 import {
   startGame, activateCheat, restartGame, worldMapCheatCode,
-  applyCurrentModeUp, startSummitMode, startEmanationsMode,
+  applyCurrentModeUp, startSummitMode, startEmanationsMode, retrySameParty,
 } from './gameFlow.js';
 import { moveSelectionLeft, moveSelectionRight, selectCurrentNode } from './worldMap.js';
 import { playNextSong, playPreviousSong, togglePlayPause } from './emanations.js';
@@ -15,13 +15,18 @@ const cheatSequence = ['ArrowLeft','ArrowLeft','ArrowRight','ArrowRight','ArrowU
 const worldMapCheat = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','Space'];
 let cheatBuffer = [];
 
+// Title → party select. Shared by the Space key and a click/tap on the title
+// screen (the click also gives the page keyboard focus, so subsequent arrow/Space
+// keys work even if the browser opened the tab without focusing the document).
+function enterPartySelect() {
+  showScreen('party');
+  updateHeroDisplay();
+  document.getElementById('hero-select-music').play().catch(() => {});
+}
+
 const keyActions = {
   title: {
-    Space: () => {
-      showScreen('party');
-      updateHeroDisplay();
-      document.getElementById('hero-select-music').play().catch(() => {});
-    },
+    Space: () => enterPartySelect(),
   },
   party: {
     ArrowLeft: () => {
@@ -80,8 +85,15 @@ const keyActions = {
       renderBattlefield();
     },
   },
-  victory: { Space: () => restartGame() },
-  'game-over': { Space: () => restartGame() },
+  victory: { Space: () => restartGame(), KeyR: () => retrySameParty(), r: () => retrySameParty() },
+  'game-over': { Space: () => restartGame(), KeyR: () => retrySameParty(), r: () => retrySameParty() },
+  dispatch: {
+    Space: () => { if (state._dispatchContinue) state._dispatchContinue(); },
+    ArrowUp: () => { if (state._dispatchContinue) state._dispatchContinue(); },
+    ArrowDown: () => { if (state._dispatchContinue) state._dispatchContinue(); },
+    ArrowLeft: () => { if (state._dispatchContinue) state._dispatchContinue(); },
+    ArrowRight: () => { if (state._dispatchContinue) state._dispatchContinue(); },
+  },
   modeUp: {
     ArrowLeft: () => {
       if (state.livingHeroes.length > 0) {
@@ -214,9 +226,22 @@ export function initInputHandler() {
     });
   }
 
+  // Title screen: click/tap anywhere to begin (also focuses the page so the
+  // keyboard works afterward — fixes "Space does nothing" when the tab opened unfocused).
+  const titleScreen = document.getElementById('title-screen');
+  if (titleScreen) titleScreen.addEventListener('click', () => enterPartySelect());
+
   // Party select: start button
   const startBtn = document.getElementById('start-btn');
   if (startBtn) startBtn.addEventListener('click', () => startGame());
+
+  // Dispatch screen: click/tap anywhere to continue
+  const dispatchScreen = document.getElementById('dispatch-screen');
+  if (dispatchScreen) {
+    dispatchScreen.addEventListener('click', () => {
+      if (state._dispatchContinue) state._dispatchContinue();
+    });
+  }
 
   // Party select nav arrows
   const navPrev = document.getElementById('nav-prev');
