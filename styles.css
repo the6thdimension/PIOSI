@@ -56,7 +56,7 @@ body {
   left: 0;
   width: 100%; /* Full width */
   height: 100%; /* Full height */
-  background: url('IMG_0905.JPG') no-repeat center center; /* Background image settings */
+  background: url('assets/images/IMG_0905.JPG') no-repeat center center; /* Background image settings */
   background-size: cover; /* Ensure background covers entire element */
   filter: blur(20px); /* Apply blur effect to the background image */
   opacity: 0.7; /* Set opacity for a subtle background */
@@ -70,7 +70,7 @@ body {
   height: 80%; /* Height relative to its container */
   max-width: 80vh; /* Maximum width relative to viewport height */
   max-height: 80vw; /* Maximum height relative to viewport width */
-  background: url('IMG_0905.JPG') no-repeat center center; /* Background image settings */
+  background: url('assets/images/IMG_0905.JPG') no-repeat center center; /* Background image settings */
   background-size: contain; /* Ensure the image is contained within the box */
   z-index: 1; /* Position on top of pseudo-elements */
 }
@@ -83,7 +83,7 @@ body {
   left: -20%; /* Offset from left */
   width: 140%; /* Extend width beyond container bounds */
   height: 140%; /* Extend height beyond container bounds */
-  background: url('IMG_0905.JPG') no-repeat center center; /* Use the same background image */
+  background: url('assets/images/IMG_0905.JPG') no-repeat center center; /* Use the same background image */
   background-size: cover; /* Cover entire area */
   opacity: 0.1; /* Low opacity for a subtle effect */
   animation: static-noise 10s linear infinite; /* Apply static noise animation */
