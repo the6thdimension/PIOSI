@@ -98,18 +98,12 @@
       "rows": 9,
       "cols": 14,
       "wallHP": 80,
-      "layout": [
-        "██████████████",
-        "█........█....█",
-        "█........█....█",
-        "█........░....█",
-        "█........█....█",
-        "█........░....█",
-        "█........█....█",
-        "█........█....█",
-        "██████████████"
-      ],
       "enemies": [
+        { "name": "Wall", "symbol": "█", "attack": 0, "range": 0, "hp": 25, "agility": 0, "x": 6, "y": 1 },
+        { "name": "Wall", "symbol": "█", "attack": 0, "range": 0, "hp": 25, "agility": 0, "x": 6, "y": 2 },
+        { "name": "Wall", "symbol": "█", "attack": 0, "range": 0, "hp": 25, "agility": 0, "x": 6, "y": 3 },
+        { "name": "Wall", "symbol": "█", "attack": 0, "range": 0, "hp": 25, "agility": 0, "x": 6, "y": 5 },
+        { "name": "Wall", "symbol": "█", "attack": 0, "range": 0, "hp": 25, "agility": 0, "x": 6, "y": 6 },
         {
           "name": "Flanker",
           "symbol": "Ͻ",
@@ -152,21 +146,13 @@
       "rows": 12,
       "cols": 18,
       "wallHP": 120,
-      "layout": [
-        "██████████████████",
-        "█................█",
-        "█..██..........██.█",
-        "█..█............█.█",
-        "█................█",
-        "█....██████████...█",
-        "█....█........█...█",
-        "█....██████████...█",
-        "█................█",
-        "█..█............█.█",
-        "█..██..........██.█",
-        "██████████████████"
-      ],
       "enemies": [
+        { "name": "Pillar", "symbol": "█", "attack": 0, "range": 0, "hp": 25, "agility": 0, "x": 8, "y": 3 },
+        { "name": "Pillar", "symbol": "█", "attack": 0, "range": 0, "hp": 25, "agility": 0, "x": 9, "y": 3 },
+        { "name": "Pillar", "symbol": "█", "attack": 0, "range": 0, "hp": 25, "agility": 0, "x": 8, "y": 7 },
+        { "name": "Pillar", "symbol": "█", "attack": 0, "range": 0, "hp": 25, "agility": 0, "x": 9, "y": 7 },
+        { "name": "Pillar", "symbol": "█", "attack": 0, "range": 0, "hp": 25, "agility": 0, "x": 12, "y": 4 },
+        { "name": "Pillar", "symbol": "█", "attack": 0, "range": 0, "hp": 25, "agility": 0, "x": 12, "y": 6 },
         {
           "name": "Arena Guard",
           "symbol": "Ꞩ",
@@ -210,17 +196,13 @@
       "rows": 8,
       "cols": 16,
       "wallHP": 150,
-      "layout": [
-        "████████████████",
-        "█..............█",
-        "█...████████...█",
-        "█...█......█...█",
-        "█...█......█...█",
-        "█...████████...█",
-        "█..............█",
-        "████████████████"
-      ],
       "enemies": [
+        { "name": "Bastion", "symbol": "█", "attack": 0, "range": 0, "hp": 30, "agility": 0, "x": 10, "y": 1 },
+        { "name": "Bastion", "symbol": "█", "attack": 0, "range": 0, "hp": 30, "agility": 0, "x": 10, "y": 2 },
+        { "name": "Bastion", "symbol": "█", "attack": 0, "range": 0, "hp": 30, "agility": 0, "x": 10, "y": 4 },
+        { "name": "Bastion", "symbol": "█", "attack": 0, "range": 0, "hp": 30, "agility": 0, "x": 10, "y": 5 },
+        { "name": "Bastion", "symbol": "█", "attack": 0, "range": 0, "hp": 30, "agility": 0, "x": 11, "y": 1 },
+        { "name": "Bastion", "symbol": "█", "attack": 0, "range": 0, "hp": 30, "agility": 0, "x": 11, "y": 5 },
         {
           "name": "Warden",
           "symbol": "Ŵ",

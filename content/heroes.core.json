@@ -26,6 +26,8 @@
     },
     {
       "id": "wizard",
+      "locked": true,
+      "unlock": { "metric": "kills", "count": 30, "hint": "The chain lengthens with every link forged — defeat 30 foes." },
       "name": "Wizard",
       "symbol": "✡",
       "sprite": "assets/characters/Wizard.png",
@@ -39,6 +41,8 @@
     },
     {
       "id": "berserker",
+      "locked": true,
+      "unlock": { "metric": "woundedHits", "count": 4, "hint": "Fight until it stops — strike 4 times while gravely wounded." },
       "name": "Berserker",
       "symbol": "⚒",
       "sprite": "assets/characters/Berserker.png",
@@ -106,6 +110,8 @@
     },
     {
       "id": "soothscribe",
+      "locked": true,
+      "unlock": { "metric": "furthestLevel", "count": 3, "hint": "See what others refuse to see — reach the third wall." },
       "name": "Soothscribe",
       "symbol": "☄",
       "sprite": "assets/characters/Soothscribe.png",
@@ -120,6 +126,8 @@
     },
     {
       "id": "nonsequiteur",
+      "locked": true,
+      "unlock": { "metric": "totalRuns", "count": 4, "hint": "Predictability is the enemy of survival — begin a fourth saga." },
       "name": "Nonsequiteur",
       "symbol": "∄",
       "sprite": "assets/characters/Nonsequiteur.png",
@@ -134,6 +142,8 @@
     },
     {
       "id": "griot",
+      "locked": true,
+      "unlock": { "metric": "victories", "count": 1, "hint": "Tell the story true — complete a saga." },
       "name": "Griot",
       "symbol": "℣",
       "sprite": "assets/characters/Griot.png",
@@ -147,6 +157,8 @@
     },
     {
       "id": "torcher",
+      "locked": true,
+      "unlock": { "metric": "kills", "count": 15, "hint": "Everything burns, given time — defeat 15 foes." },
       "name": "Torcher",
       "symbol": "⚶",
       "sprite": "assets/characters/Torcher.png",
@@ -161,6 +173,8 @@
     },
     {
       "id": "slujier",
+      "locked": true,
+      "unlock": { "metric": "kills", "count": 25, "hint": "The mark outlasts the marked — defeat 25 foes." },
       "name": "Slüjier",
       "symbol": "🜜",
       "sprite": "assets/characters/Slujier.png",
@@ -174,6 +188,8 @@
     },
     {
       "id": "shrink",
+      "locked": true,
+      "unlock": { "metric": "nearDeathSurvivals", "count": 3, "hint": "Every soldier breaks twice — survive three brushes with death." },
       "name": "Shrink",
       "symbol": "☊",
       "sprite": "assets/characters/Shrink.png",
@@ -188,6 +204,8 @@
     },
     {
       "id": "sycophant",
+      "locked": true,
+      "unlock": { "metric": "modeUps", "count": 6, "hint": "Become whatever the moment requires — empower the party six times." },
       "name": "Sycophant",
       "symbol": "♟",
       "sprite": "assets/characters/Sycophant.png",
@@ -200,6 +218,8 @@
     },
     {
       "id": "yeetrian",
+      "locked": true,
+      "unlock": { "metric": "kills", "count": 20, "hint": "Space is a problem solved with force — defeat 20 foes." },
       "name": "Yeetrian",
       "symbol": "⛓",
       "sprite": "assets/characters/Yeetrian.png",
@@ -213,6 +233,8 @@
     },
     {
       "id": "mellitron",
+      "locked": true,
+      "unlock": { "metric": "flanks", "count": 6, "hint": "The swarm surrounds — land six flanking blows." },
       "name": "Mellitron",
       "symbol": "丰",
       "sprite": "assets/characters/Mellitron.png",
@@ -226,6 +248,8 @@
     },
     {
       "id": "gastronomer",
+      "locked": true,
+      "unlock": { "metric": "foodEaten", "count": 4, "hint": "Sustain the body — gather four morsels from the field." },
       "name": "Gastronomer",
       "symbol": "𑍐",
       "sprite": "assets/characters/Gastronomer.png",
@@ -240,6 +264,8 @@
     },
     {
       "id": "palisade",
+      "locked": true,
+      "unlock": { "metric": "damageTaken", "count": 50, "hint": "Strike me again — let the company endure fifty damage." },
       "name": "Palisade",
       "symbol": "ᱟ",
       "sprite": "assets/characters/Palisade.png",
@@ -253,6 +279,8 @@
     },
     {
       "id": "mycelian",
+      "locked": true,
+      "unlock": { "metric": "foodEaten", "count": 8, "hint": "Growth is inevitable — gather eight morsels from the field." },
       "name": "Mycelian",
       "symbol": "ৡ",
       "sprite": "assets/characters/Mycelian.png",
@@ -266,6 +294,8 @@
     },
     {
       "id": "paeg",
+      "locked": true,
+      "unlock": { "metric": "kills", "count": 40, "hint": "Small things accumulate — defeat forty foes." },
       "name": "Pæg",
       "symbol": "ꚤ",
       "sprite": "assets/characters/Paeg.png",
@@ -288,6 +318,8 @@
     },
     {
       "id": "kemetic",
+      "locked": true,
+      "unlock": { "metric": "heroDeaths", "count": 1, "hint": "What dies feeds what lives — let a hero fall." },
       "name": "Kemetic",
       "symbol": "𓋇",
       "sprite": "assets/characters/Kemetic.png",
@@ -301,6 +333,8 @@
     },
     {
       "id": "greenjay",
+      "locked": true,
+      "unlock": { "metric": "heroDeaths", "count": 4, "hint": "I have fallen before — witness four heroes fall." },
       "name": "Greenjay",
       "symbol": "࿈",
       "sprite": "assets/characters/Greenjay.png",
@@ -314,6 +348,8 @@
     },
     {
       "id": "sysiphuge",
+      "locked": true,
+      "unlock": { "metric": "flawlessLevels", "count": 3, "hint": "Never where the blow lands — clear three levels losing no one." },
       "name": "Sysiphuge",
       "symbol": "₾",
       "sprite": "assets/characters/Sysiphuge.png",
@@ -327,6 +363,8 @@
     },
     {
       "id": "bombador",
+      "locked": true,
+      "unlock": { "metric": "flanks", "count": 10, "hint": "Closeness is the whole of the weapon — land ten flanking blows." },
       "name": "Bombador",
       "symbol": "❦",
       "sprite": "assets/characters/Bombador.png",

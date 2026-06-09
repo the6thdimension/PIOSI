@@ -22,7 +22,7 @@ export class PersistentDeath {
 }
 
 export class BattleEngine {
-  constructor(party, enemies, fieldRows, fieldCols, wallHP, logCallback, onLevelComplete, onGameOver, levelLayout = null, narratorCallback = null) {
+  constructor(party, enemies, fieldRows, fieldCols, wallHP, logCallback, onLevelComplete, onGameOver, levelLayout = null, narratorCallback = null, metrics = null) {
     // Keep all heroes in the party array.
     // NOTE: Heroes with persistent death will no longer be referenced in the battlefield.
     this.party = party;
@@ -34,9 +34,15 @@ export class BattleEngine {
     this.onLevelComplete = onLevelComplete;
     this.onGameOver = onGameOver;
     this.levelLayout = levelLayout;
+    // Per-cell HP for destructible layout walls ('#'). Keyed "x,y". These are
+    // obstacles with their own HP — they never drain the objective wallHP.
+    this.layoutWalls = {};
     // Optional narrator callback for dramatic battle moments (kill, heroDeath, nearDeath).
     // Called synchronously with a structured event; must not block.
     this.narratorCallback = typeof narratorCallback === 'function' ? narratorCallback : null;
+    // Optional run-metrics accumulator (plain object on state). Drives the
+    // post-mortem screen and hero-unlock conditions. Null in tests (no-op).
+    this.metrics = metrics && typeof metrics === 'object' ? metrics : null;
 
     // Advance past any heroes that are already persistently dead at battle start.
     this.currentUnit = 0;
@@ -53,6 +59,10 @@ export class BattleEngine {
     }
     this.awaitingAttackDirection = false;
     this.transitioningLevel = false;
+    // Tunable pacing (ms). Kept as fields so they're discoverable and overridable;
+    // tests stub shortPause directly so these defaults don't affect the suite.
+    this.shortPauseMs = 200;       // beat between attack-resolution steps
+    this.wallCollapseDelayMs = 400; // brief dwell on "The Wall Collapses!" before Mode Up
 
     // Initialize status effects for all heroes and enemies.
     this.party.forEach(hero => {
@@ -130,8 +140,32 @@ export class BattleEngine {
       if (!Array.isArray(this.levelLayout[y])) continue;
       for (let x = 0; x < this.levelLayout[y].length; x++) {
         const cell = this.levelLayout[y][x];
-        if (cell && cell.type === 'wall') field[y][x] = '#';
+        if (cell && cell.type === 'wall') {
+          field[y][x] = '#';
+          this.layoutWalls[`${x},${y}`] = (typeof cell.hp === 'number' ? cell.hp : 50);
+        }
       }
+    }
+  }
+
+  /**
+   * Damages a destructible layout wall ('#') by its own HP pool. Clears the cell
+   * when it crumbles. Never touches the objective wallHP and never completes the level.
+   */
+  _damageLayoutWall(x, y, dmg) {
+    const key = `${x},${y}`;
+    if (this.layoutWalls[key] === undefined) {
+      // Stray '#' with no tracked HP — clear in one hit so it can't block forever.
+      this.battlefield[y][x] = '.';
+      return;
+    }
+    this.layoutWalls[key] -= dmg;
+    if (this.layoutWalls[key] <= 0) {
+      this.battlefield[y][x] = '.';
+      delete this.layoutWalls[key];
+      this.logCallback('A barrier crumbles.');
+    } else {
+      this.logCallback(`A barrier holds. (Barrier HP: ${this.layoutWalls[key]})`);
     }
   }
 
@@ -295,7 +329,9 @@ export class BattleEngine {
     }
     const newX = unit.x + dx, newY = unit.y + dy;
     if (!this.isWithinBounds(newX, newY)) return;
-    if (this.battlefield[newY][newX] === 'ᚙ' || this.battlefield[newY][newX] === '█' || this.battlefield[newY][newX] === '#') {
+    // The breaking wall (ᚙ) is the level objective: it drains the shared wallHP
+    // and collapsing it completes the level. It is the ONLY wall that does so.
+    if (this.battlefield[newY][newX] === 'ᚙ') {
       this.wallHP -= unit.attack;
       this.logCallback(`${unit.name} attacks the wall for ${unit.attack} damage! (Wall HP: ${this.wallHP})`);
       if (this.wallHP <= 0 && !this.transitioningLevel) {
@@ -306,17 +342,27 @@ export class BattleEngine {
       if (this.movePoints === 0) this.nextTurn();
       return;
     }
+    // Layout walls (#) are destructible obstacles with their own HP — they never
+    // drain the objective wallHP and never complete the level.
+    if (this.battlefield[newY][newX] === '#') {
+      this._damageLayoutWall(newX, newY, unit.attack);
+      this.movePoints--;
+      if (this.movePoints === 0) this.nextTurn();
+      return;
+    }
     if (this.battlefield[newY][newX] === 'ౚ') {
       const healingValue = 10 + (unit.spicy ? unit.spicy * 2 : 0);
       unit.hp += healingValue;
       this.logCallback(`${unit.name} picks up a vittle and heals for ${healingValue} HP! (New HP: ${unit.hp})`);
       this.battlefield[newY][newX] = '.';
+      this._metric('foodEaten');
     }
     if (this.battlefield[newY][newX] === 'ඉ') {
       const healingValue = 5;
       unit.hp += healingValue;
       this.logCallback(`${unit.name} picks up a mushroom and heals for ${healingValue} HP! (New HP: ${unit.hp})`);
       this.battlefield[newY][newX] = '.';
+      this._metric('foodEaten');
       if (unit.spore && unit.spore > 0) {
         const stats = ['attack', 'range', 'agility', 'hp'];
         const randomStat = stats[Math.floor(Math.random() * stats.length)];
@@ -392,8 +438,11 @@ export class BattleEngine {
         // FLANKING BONUS (enhancement #3): hero + ally on opposite sides → +25% damage
         const flankBonus = this._isFlankingAttack(unit, enemy)
           ? Math.ceil(effectiveAttack * 0.25) : 0;
-        if (flankBonus > 0)
+        if (flankBonus > 0) {
           this.logCallback(`[⚡ INTERACTION] Flanking blow! +${flankBonus} bonus damage on ${enemy.name}!`);
+          this._metric('flanks');
+        }
+        if (isWounded) this._metric('woundedHits');
 
         const totalDamage = effectiveAttack + flankBonus;
         enemy.hp -= totalDamage;
@@ -409,14 +458,15 @@ export class BattleEngine {
           }
         }
         if (unit.burn) {
-          enemy.statusEffects.burn = { damage: unit.burn, duration: 3 };
+          enemy.statusEffects.burn = { damage: unit.burn, duration: 3, by: unit };
           this.logCallback(`${enemy.name} is burning for ${unit.burn} damage for 3 turns!`);
         }
         if (unit.sluj) {
-          if (!enemy.statusEffects.sluj) enemy.statusEffects.sluj = { level: unit.sluj, duration: 4, counter: 0 };
+          if (!enemy.statusEffects.sluj) enemy.statusEffects.sluj = { level: unit.sluj, duration: 4, counter: 0, by: unit };
           else {
             enemy.statusEffects.sluj.level += unit.sluj;
             enemy.statusEffects.sluj.duration = 4;
+            enemy.statusEffects.sluj.by = unit;
           }
           this.logCallback(`${enemy.name} is afflicted with slüj (level ${enemy.statusEffects.sluj.level}) for 4 turns!`);
         }
@@ -428,7 +478,7 @@ export class BattleEngine {
           const initialChainDamage = Math.round(unit.attack * effectiveMultiplier);
           if (initialChainDamage > 0) {
             this.logCallback(`${enemy.name} takes ${initialChainDamage} chain damage!`);
-            this.applyChainDamage(enemy, initialChainDamage, effectiveMultiplier, new Set());
+            this.applyChainDamage(enemy, initialChainDamage, effectiveMultiplier, new Set(), unit);
           }
         }
         // Check for adjacent heroes with a non-zero "bomba" stat
@@ -449,6 +499,7 @@ export class BattleEngine {
           this.logCallback(`${enemy.name} is defeated!`);
           this.battlefield[enemy.y][enemy.x] = '.';
           this.enemies = this.enemies.filter(e => e !== enemy);
+          this._recordKill(unit);
           if (this.narratorCallback) this.narratorCallback({ type: 'kill', hero: unit, enemy });
         }
         this.awaitingAttackDirection = false;
@@ -456,7 +507,7 @@ export class BattleEngine {
         this.nextTurn();
         return;
       }
-      if (this.battlefield[targetY][targetX] === 'ᚙ' || this.battlefield[targetY][targetX] === '█' || this.battlefield[targetY][targetX] === '#') {
+      if (this.battlefield[targetY][targetX] === 'ᚙ') {
         this.wallHP -= unit.attack;
         this.logCallback(`${unit.name} attacks the wall for ${unit.attack} damage! (Wall HP: ${this.wallHP})`);
         this.awaitingAttackDirection = false;
@@ -468,6 +519,15 @@ export class BattleEngine {
         this.nextTurn();
         return;
       }
+      // Layout walls (#) are destructible obstacles with their own HP — they block
+      // the attack ray but never drain the objective wallHP or complete the level.
+      if (this.battlefield[targetY][targetX] === '#') {
+        this._damageLayoutWall(targetX, targetY, unit.attack);
+        this.awaitingAttackDirection = false;
+        await this.shortPause();
+        this.nextTurn();
+        return;
+      }
     }
     this.logCallback(`${unit.name} attacks, but nothing is in range.`);
     this.awaitingAttackDirection = false;
@@ -475,7 +535,7 @@ export class BattleEngine {
     this.nextTurn();
   }
 
-  applyChainDamage(enemy, damage, effectiveMultiplier, visited = new Set()) {
+  applyChainDamage(enemy, damage, effectiveMultiplier, visited = new Set(), byHero = null) {
     visited.add(enemy);
     const adjacentOffsets = [
       { x: -1, y: 0 }, { x: 1, y: 0 },
@@ -494,11 +554,12 @@ export class BattleEngine {
           this.logCallback(`${adjacentEnemy.name} is defeated by chain damage!`);
           this.battlefield[adjY][adjX] = '.';
           this.enemies = this.enemies.filter(e => e !== adjacentEnemy);
+          this._recordKill(byHero);
         }
         const nextDamage = Math.round(damage * effectiveMultiplier);
         if (nextDamage > 0 && nextDamage < damage) {
           this.logCallback(`${adjacentEnemy.name} takes ${nextDamage} chain propagation damage!`);
-          this.applyChainDamage(adjacentEnemy, nextDamage, effectiveMultiplier, visited);
+          this.applyChainDamage(adjacentEnemy, nextDamage, effectiveMultiplier, visited, byHero);
         }
       }
     }
@@ -520,6 +581,7 @@ export class BattleEngine {
         this.logCallback(`${enemy.name} is defeated by its slüj effect!`);
         this.battlefield[enemy.y][enemy.x] = '.';
         this.enemies = this.enemies.filter(e => e !== enemy);
+        this._recordKill(enemy.statusEffects.sluj.by);
         return;
       }
       
@@ -607,6 +669,7 @@ export class BattleEngine {
           this.logCallback(`${enemy.name} attacks ${targetHero.name} but their armor absorbs it (Remaining Armor: ${targetHero.armor})`);
         } else {
           targetHero.hp -= enemy.attack;
+          this._metric('damageTaken', enemy.attack);
           this.logCallback(`${enemy.name} attacks ${targetHero.name} for ${enemy.attack} damage! (HP left: ${targetHero.hp})`);
         }
         if (targetHero.hp <= 0) {
@@ -620,8 +683,9 @@ export class BattleEngine {
         } else {
           // NEAR-DEATH NARRATOR (enhancement #10): call when hero drops to ≤25% max HP
           const nearDeathThreshold = Math.ceil((targetHero._maxHp || targetHero.hp) * 0.25);
-          if (targetHero.hp <= nearDeathThreshold && this.narratorCallback) {
-            this.narratorCallback({ type: 'nearDeath', hero: targetHero });
+          if (targetHero.hp <= nearDeathThreshold) {
+            this._metric('nearDeathSurvivals');
+            if (this.narratorCallback) this.narratorCallback({ type: 'nearDeath', hero: targetHero });
           }
         }
         if (targetHero.hp > 0 && targetHero.rage && targetHero.rage > 0) {
@@ -691,6 +755,7 @@ export class BattleEngine {
           this.logCallback(`${enemy.name} died from burn damage!`);
           this.battlefield[enemy.y][enemy.x] = '.';
           this.enemies = this.enemies.filter(e => e !== enemy);
+          this._recordKill(enemy.statusEffects.burn && enemy.statusEffects.burn.by);
         }
       }
       // The slüj effect is handled via the imported applySlujEffect() in enemyTurn().
@@ -717,6 +782,7 @@ export class BattleEngine {
                 this.logCallback(`${enemy.name} is defeated by swarm damage!`);
                 this.battlefield[targetY][targetX] = '.';
                 this.enemies = this.enemies.filter(e => e !== enemy);
+                this._recordKill(hero);
               }
             }
           }
@@ -731,10 +797,16 @@ export class BattleEngine {
       this.logCallback(`Hero ${hero.name} falls but rises with ${hero.rise} HP!`);
       hero.hp = hero.rise;
       hero.rise = 0;
+      this._metric('rises');
       this.applyAnkhBoost();
       return;
     }
     if (hero.persistentDeath) return;
+    this._metric('heroDeaths');
+    if (this.metrics) {
+      this.metrics.fallen = this.metrics.fallen || [];
+      this.metrics.fallen.push(hero.name);
+    }
     this.logCallback(`Hero ${hero.name} has fallen permanently. Applying persistent death and ankh effects...`);
     // LAST WORDS (enhancement #6): emit hero's final line if defined in JSON
     if (hero.lastWords) {
@@ -846,13 +918,29 @@ export class BattleEngine {
     }
   }
 
-  shortPause() {
-    return new Promise(resolve => setTimeout(resolve, 300));
+  // ── Run-metric helpers (no-op when metrics absent, e.g. in tests) ──────────
+  _metric(key, n = 1) {
+    if (!this.metrics) return;
+    this.metrics[key] = (this.metrics[key] || 0) + n;
   }
-  
+
+  _recordKill(byHero = null) {
+    if (!this.metrics) return;
+    this.metrics.kills = (this.metrics.kills || 0) + 1;
+    if (byHero) {
+      const id = byHero.id || byHero.name;
+      this.metrics.killsByHero = this.metrics.killsByHero || {};
+      this.metrics.killsByHero[id] = (this.metrics.killsByHero[id] || 0) + 1;
+    }
+  }
+
+  shortPause() {
+    return new Promise(resolve => setTimeout(resolve, this.shortPauseMs));
+  }
+
   handleWallCollapse() {
     this.logCallback('The Wall Collapses!');
     this.transitioningLevel = true;
-    setTimeout(() => { if (typeof this.onLevelComplete === 'function') this.onLevelComplete(); }, 1500);
+    setTimeout(() => { if (typeof this.onLevelComplete === 'function') this.onLevelComplete(); }, this.wallCollapseDelayMs);
   }
 }

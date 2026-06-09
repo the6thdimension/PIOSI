@@ -1290,7 +1290,7 @@ button:active {
 }
 
 #mode-up-window.modeup-pulse {
-  animation: modeup-pulse 0.6s ease-out forwards;
+  animation: modeup-pulse 0.45s ease-out forwards;
 }
 
 /* ── Interaction log entries (⚡ multi-stat combos) ────────── */
@@ -1429,6 +1429,103 @@ button:active {
 @keyframes dispatch-blink {
   0%, 100% { opacity: 0.4; }
   50%       { opacity: 1; }
+}
+
+/* ── Post-mortem (run summary on game-over / victory) ─────── */
+
+.post-mortem-wrap { display: flex; justify-content: center; margin: 14px 0; }
+
+.post-mortem {
+  width: 100%;
+  max-width: 420px;
+  background: rgba(0,0,0,0.32);
+  border: 1px solid #2e2e44;
+  border-radius: 6px;
+  padding: 14px 18px;
+  text-align: left;
+}
+
+.pm-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  font-size: 0.9rem;
+}
+.pm-stat:last-of-type { border-bottom: none; }
+.pm-k { color: #8890a8; letter-spacing: 0.04em; text-transform: uppercase; font-size: 0.74rem; }
+.pm-v { color: #d8dce8; font-weight: 600; }
+
+.pm-unlocks {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #4a3a10;
+  text-align: center;
+}
+.pm-unlocks-title {
+  color: #c8a84a;
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  margin-bottom: 8px;
+}
+.pm-unlock {
+  color: #f0d878;
+  font-weight: 700;
+  font-size: 1.05rem;
+  padding: 3px 0;
+  animation: dispatch-text-rise 0.5s ease both;
+  text-shadow: 0 0 16px rgba(240,200,80,0.4);
+}
+
+.pm-next {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  text-align: center;
+  font-size: 0.82rem;
+  color: #a8b0c0;
+}
+.pm-next b { color: #d8dce8; }
+.pm-hint { font-style: italic; color: #8890a8; }
+.pm-prog { color: #c8a84a; font-weight: 600; }
+
+.restart-hint {
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  color: #6a6a82;
+}
+
+/* ── Locked heroes in party select ───────────────────────── */
+
+.spotlight-hero.locked .spotlight-sprite,
+.spotlight-hero.locked .spotlight-symbol {
+  filter: grayscale(1) brightness(0.35);
+  opacity: 0.7;
+}
+.spotlight-hero.locked .spotlight-glow { opacity: 0.15; }
+
+.action-locked {
+  color: #c8a84a;
+  font-size: 0.82rem;
+  font-style: italic;
+}
+.lock-prog { color: #8890a8; font-style: normal; font-weight: 600; }
+
+.stage-figure.locked {
+  filter: brightness(0.12) saturate(0);
+  position: relative;
+}
+.stage-figure.locked.center-stage {
+  filter: brightness(0.3) saturate(0.2);
+}
+.lock-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  font-size: 0.7rem;
+  opacity: 0.85;
+  filter: none;
 }
 
 /* ── Hero history (lore) panel in party select ───────────── */

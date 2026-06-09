@@ -4,6 +4,12 @@ import {
   fetchShrinkAdvice, fetchRandomRecipe, getGriotReaction,
 } from './griot.js';
 import { getCompleteStats } from './renderer.js';
+import { isHeroAvailable } from './unlocks.js';
+
+/** True if the hero can be selected (unlocks disabled, or already unlocked). */
+function available(hero) {
+  return !state.unlocksEnabled || isHeroAvailable(hero, state.unlockedHeroes);
+}
 
 // ── Archetype derivation ──────────────────────────────────────────────────────
 
@@ -95,11 +101,13 @@ export function renderRosterStrip() {
   strip.innerHTML = state.allHeroes.map((hero, i) => {
     const isSel = state.selectedHeroes.includes(i);
     const isCur = i === state.heroIndex;
-    return `<div class="stage-figure${isSel ? ' cast' : ''}${isCur ? ' center-stage' : ''}"
-      data-index="${i}" title="${hero.name}">
+    const isLocked = !available(hero);
+    return `<div class="stage-figure${isSel ? ' cast' : ''}${isCur ? ' center-stage' : ''}${isLocked ? ' locked' : ''}"
+      data-index="${i}" title="${isLocked ? 'Locked' : hero.name}">
       ${hero.sprite
         ? `<img src="${hero.sprite}" alt="${hero.name}">`
         : `<span>${hero.symbol}</span>`}
+      ${isLocked ? '<div class="lock-badge">🔒</div>' : ''}
       ${isCur ? '<div class="footlight"></div>' : ''}
     </div>`;
   }).join('');
@@ -120,6 +128,7 @@ export function renderRosterStrip() {
 export async function updateHeroDisplay() {
   const hero = state.allHeroes[state.heroIndex];
   const isSelected = state.selectedHeroes.includes(state.heroIndex);
+  const isLocked = !available(hero);
   const displayEl = document.getElementById('hero-display');
   if (!displayEl) return;
 
@@ -127,9 +136,10 @@ export async function updateHeroDisplay() {
   displayEl.classList.add('fading');
   await new Promise(r => setTimeout(r, 80));
 
-  // Fetch flavor while faded
+  // Fetch flavor while faded (skip API flavor for locked heroes — no spoilers, no waste)
   let flavor = '';
-  if (hero.joke)               flavor = await fetchJoke();
+  if (isLocked)                flavor = '';
+  else if (hero.joke)          flavor = await fetchJoke();
   else if (hero.meat)          flavor = await fetchBaconIpsum();
   else if (hero.tarot)         flavor = await fetchTarotCard();
   else if (hero.nonseq)        flavor = await fetchNonseqFact();
@@ -146,14 +156,21 @@ export async function updateHeroDisplay() {
 
   const archetype = getArchetype(hero);
   const selCount  = state.selectedHeroes.length;
+  const showLore  = hero.lore && !isLocked;
 
   let actionLabel;
-  if (isSelected)        actionLabel = '<span class="action-selected">✓ In the company — Space to remove</span>';
+  if (isLocked) {
+    const u = hero.unlock;
+    const career = (state.metaProgress && state.metaProgress.career) || {};
+    const cur = u ? Math.min(career[u.metric] || 0, u.count) : 0;
+    const prog = u ? ` <span class="lock-prog">(${cur}/${u.count})</span>` : '';
+    actionLabel = `<span class="action-locked">🔒 ${u ? u.hint : 'Locked'}${prog}</span>`;
+  } else if (isSelected) actionLabel = '<span class="action-selected">✓ In the company — Space to remove</span>';
   else if (selCount < 3) actionLabel = '<span class="action-pick">Space to cast</span>';
   else                   actionLabel = '<span class="action-full">Company full</span>';
 
   displayEl.innerHTML = `
-    <div class="spotlight-hero">
+    <div class="spotlight-hero${isLocked ? ' locked' : ''}">
       <div class="spotlight-glow archetype-glow-${archetype.toLowerCase()}"></div>
       <div class="spotlight-sprite-wrap">
         ${hero.sprite
@@ -162,10 +179,10 @@ export async function updateHeroDisplay() {
       </div>
       <div class="spotlight-info">
         <div class="spotlight-name-row">
-          <span class="spotlight-name${hero.lore ? ' has-lore' : ''}" id="spotlight-name-btn">${hero.name}${hero.lore ? ' <span class="lore-glyph">📜</span>' : ''}</span>
+          <span class="spotlight-name${showLore ? ' has-lore' : ''}" id="spotlight-name-btn">${hero.name}${showLore ? ' <span class="lore-glyph">📜</span>' : ''}</span>
           <span class="hero-archetype-tag archetype-${archetype.toLowerCase()}">${archetype}</span>
         </div>
-        ${hero.lore ? `<div class="hero-lore" id="hero-lore" style="display:none;">${hero.lore}</div>` : ''}
+        ${showLore ? `<div class="hero-lore" id="hero-lore" style="display:none;">${hero.lore}</div>` : ''}
         ${flavor ? `<div class="hero-flavor">${flavor}</div>` : ''}
         <div class="hero-stat-chips">${chips}</div>
         <div class="hero-action-row">${actionLabel}</div>
@@ -214,8 +231,11 @@ export async function updateHeroDisplay() {
 // ── Select / deselect ─────────────────────────────────────────────────────────
 
 export function selectHero() {
+  const hero = state.allHeroes[state.heroIndex];
   if (state.selectedHeroes.includes(state.heroIndex)) {
     state.selectedHeroes = state.selectedHeroes.filter(i => i !== state.heroIndex);
+  } else if (!available(hero)) {
+    return; // locked hero — cannot be cast
   } else if (state.selectedHeroes.length < 3) {
     state.selectedHeroes.push(state.heroIndex);
   }

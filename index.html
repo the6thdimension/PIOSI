@@ -91,8 +91,9 @@
     <div id="victory">
       <h1>Victory!</h1>
       <p>Congratulations! All levels have been completed!</p>
+      <div id="victory-summary" class="post-mortem-wrap"></div>
       <p id="victory-griot" class="griot-line"></p>
-      <p>Press Spacebar to Restart</p>
+      <p class="restart-hint">Space — new company &nbsp;·&nbsp; R — same company again</p>
     </div>
 
     <!-- World Map Screen -->
@@ -123,8 +124,10 @@
     <!-- Game Over Screen -->
     <div id="game-over">
       <h1>Game Over</h1>
-      <p>All your heroes have been defeated.<br />Press Spacebar to Restart.</p>
+      <p>All your heroes have been defeated.</p>
+      <div id="game-over-summary" class="post-mortem-wrap"></div>
       <p id="game-over-griot" class="griot-line"></p>
+      <p class="restart-hint">Space — new company &nbsp;·&nbsp; R — same company again</p>
     </div>
 
     <!-- Mode Up Window -->
@@ -156,6 +159,8 @@
       import { initializeGriot, getGriotReaction } from './src/griot.js';
       import { showScreen } from './src/screenManager.js';
       import { initInputHandler } from './src/inputHandler.js';
+      import { loadMeta, saveMeta } from './src/persistence.js';
+      import { getStarterHeroIds } from './src/unlocks.js';
 
       Promise.all([
         initializeGriot('content/fantasy_narrative.txt'),
@@ -164,6 +169,20 @@
           state.allHeroes = heroes;
           state.getLevel = getLevel;
           state.dispatches = dispatches || [];
+          // Warm the browser cache so sprites never fetch mid-battle (no flicker/pop).
+          (heroes || []).forEach(h => { if (h.sprite) { const im = new Image(); im.src = h.sprite; } });
+          // Meta-progression: load saved unlocks; seed the starter roster on first launch.
+          const unlocksOn = !!(manifest.modes && manifest.modes.heroUnlocks);
+          const meta = loadMeta();
+          if (!meta.unlockedHeroes || meta.unlockedHeroes.length === 0) {
+            meta.unlockedHeroes = getStarterHeroIds(heroes);
+            saveMeta(meta);
+          }
+          state.metaProgress = meta;
+          state.unlocksEnabled = unlocksOn;
+          state.unlockedHeroes = unlocksOn
+            ? meta.unlockedHeroes.slice()
+            : heroes.map(h => h.id || h.name);
         }).catch(() => {
           console.warn('Content loading failed; using static fallback data.');
         }),

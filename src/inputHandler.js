@@ -6,7 +6,7 @@ import { updateHeroDisplay, selectHero } from './partySelectUI.js';
 import { updateModeUpHeroDisplay } from './modeUpUI.js';
 import {
   startGame, activateCheat, restartGame, worldMapCheatCode,
-  applyCurrentModeUp, startSummitMode, startEmanationsMode,
+  applyCurrentModeUp, startSummitMode, startEmanationsMode, retrySameParty,
 } from './gameFlow.js';
 import { moveSelectionLeft, moveSelectionRight, selectCurrentNode } from './worldMap.js';
 import { playNextSong, playPreviousSong, togglePlayPause } from './emanations.js';
@@ -80,8 +80,8 @@ const keyActions = {
       renderBattlefield();
     },
   },
-  victory: { Space: () => restartGame() },
-  'game-over': { Space: () => restartGame() },
+  victory: { Space: () => restartGame(), KeyR: () => retrySameParty(), r: () => retrySameParty() },
+  'game-over': { Space: () => restartGame(), KeyR: () => retrySameParty(), r: () => retrySameParty() },
   dispatch: {
     Space: () => { if (state._dispatchContinue) state._dispatchContinue(); },
     ArrowUp: () => { if (state._dispatchContinue) state._dispatchContinue(); },
