@@ -123,7 +123,7 @@ PIOSI is built around a small set of convictions that should shape every decisio
 
 **Fun before features.** A mechanic that isn't satisfying to execute — even once — doesn't belong in the game. Test the *feel* of every turn, not just the correctness. *(Miyamoto)*
 
-**Zero barriers.** The game works by double-clicking `play.bat`. No install, no build, no account. Every layer of friction between a new player and the first turn is a design failure. *(Gabe Newell)*
+**Zero barriers.** The game works by double-clicking `play.bat` (Windows) or `play.command` (macOS). No install, no build, no account. Every layer of friction between a new player and the first turn is a design failure. *(Gabe Newell)*
 
 **Systems over scripts.** Heroes and enemies operate through stats, not named behaviors. A well-tuned stat system produces emergent encounters that no designer planned — and those are the memorable ones. *(Warren Spector, Peter Molyneux)*
 

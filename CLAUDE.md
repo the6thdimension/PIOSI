@@ -14,10 +14,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 # Run the game locally (double-click or from terminal)
-play.bat                        # starts Python HTTP server + opens browser
+play.bat                        # Windows: starts Python HTTP server + opens browser
+./play.command                  # macOS: same, double-clickable in Finder (.command runs in Terminal)
 
 # Equivalent manual command
-python -m http.server 8000      # then open http://localhost:8000
+python -m http.server 8000      # then open http://localhost:8000  (use python3 on macOS)
 
 # Run all regression tests (Node 18+ required, no install needed)
 npm test                        # node --test tests/*.test.js
